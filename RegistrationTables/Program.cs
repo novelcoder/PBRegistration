@@ -325,6 +325,10 @@ partial class Program
                     values.Add(divisionLists[col].Item2[row].Name);
                     written = true;
                 }
+                else
+                {
+                    values.Add(string.Empty);
+                }
             }
             row++;
             dataToWrite.Add(values);

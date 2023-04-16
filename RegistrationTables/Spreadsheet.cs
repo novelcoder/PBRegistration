@@ -8,7 +8,7 @@ namespace RegistrationTables
 	public class Spreadsheet
 	{
 		private static string GoogleApplicationName { get; } = "PBTournament";       
-        private static string CredentialsPath { get; } = "/users/jamesgreenwood/Projects/RegistrationTables/RegistrationTables/pbtournament-81d8134df6b8.json";
+        private static string CredentialsPath { get; } = "/users/jamesgreenwood/Projects/PBRegistration/RegistrationTables/pbtournament-e5c050a7d4a5.json";
         public static string FormResponsesSheetId { get;  } = "1AA--AFHnwpLzI9LyLI68IE0JMfQrlpjX5nkaiNpTXA4";
         public static string MDMUploadSheetId { get;  } = "1lBVqkPoWgvM1mZBsrU7XWmSi8Q_lwqr1w83HPTVf5R4";
         private static string[] Scopes = { SheetsService.Scope.Spreadsheets };
