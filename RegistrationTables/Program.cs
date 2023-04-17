@@ -18,13 +18,6 @@ partial class Program
         using (var writer = new StreamWriter("/users/jamesgreenwood/OneDrive/Pickleball/data/MayDayMeleeReports.csv", false))
         //using (var rdr = new StreamReader("/users/jamesgreenwood/OneDrive/Pickleball/data/Form Responses.csv"))
         {
-            //using (var rdr = new StreamReader("/users/jamesgreenwood/OneDrive/Pickleball/data/KellyMacForm.csv"))
-            //using (var csv = new CsvReader(rdr, CultureInfo.InvariantCulture))
-            //{
-            //    csv.Context.RegisterClassMap<RegistrationMap>();
-
-            //    var records = csv.GetRecords<Registration>();
-            //var people = Registration.Parse(records);
             var rr = new ResponseReader();
             var sheetWriter = new SheetWriter();
 
@@ -72,6 +65,8 @@ partial class Program
             dataToWrite = MissingPeopleData(missingPeople);
             sheetWriter.BulkWriteRange(sheetName, dataToWrite);
         }
+        Console.WriteLine("Press [ENTER] to continue.");
+        Console.ReadLine();
     }
 
     private static List<IList<object>> MailChimpUpload(List<Person> people)

@@ -173,7 +173,16 @@ namespace RegistrationTables
 						EventType = EventType.mens
 					};
 					break;
-				case "Mixed Doubles 2.5":
+				case "Men's Doubles 3.5/4.0 - Age 55+ (both partners must be 55+)":
+                    result = new Event
+                    {
+                        PartnerName = partnerName,
+                        DivisionLevel = DivisionLevel.s35plus,
+                        EventType = EventType.mens
+                    };
+                    break;
+
+                case "Mixed Doubles 2.5":
 					result = new Event
 					{
 						PartnerName = partnerName,
