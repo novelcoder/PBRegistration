@@ -274,23 +274,22 @@ partial class Program
         var result = new List<IList<object>>();
         var divisionListsOne = new List<Tuple<string, List<Person>>>();
         var divisionListsTwo = new List<Tuple<string, List<Person>>>();
-        foreach (int evtType in Enum.GetValues(typeof(EventType)))
-            foreach (int dLvl in Enum.GetValues(typeof(DivisionLevel)))
-            {
-                var eventType = (EventType)evtType;
-                var divisionLevel = (DivisionLevel)dLvl;
-                
-                var list = Person.DivisionList(people, eventType, (DivisionLevel)dLvl);
-                if (list.Count > 0)
-                {
-                    var division = Registration.DivisionName((EventType)evtType, (DivisionLevel)dLvl);
 
-                    if (Event.IsDayOne(divisionLevel))
-                        divisionListsOne.Add(new Tuple<string, List<Person>>(division, list));
-                    else
-                        divisionListsTwo.Add(new Tuple<string, List<Person>>(division, list));
-                }
-            }
+        foreach (var div in Event.DayOneDivisions())
+        {
+
+            var list = Person.DivisionList(people, div.Item1, div.Item2);
+            var division = Registration.DivisionName(div.Item1, div.Item2);
+            divisionListsOne.Add(new Tuple<string, List<Person>>(division, list));
+        }
+
+        foreach (var div in Event.DayTwoDivisions())
+        {
+
+            var list = Person.DivisionList(people, div.Item1, div.Item2);
+            var division = Registration.DivisionName(div.Item1, div.Item2);
+            divisionListsTwo.Add(new Tuple<string, List<Person>>(division, list));
+        }
 
         AllDivisionDetails(result, divisionListsOne, "One");
         AllDivisionDetails(result, divisionListsTwo, "Two");

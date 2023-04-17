@@ -243,7 +243,23 @@ namespace RegistrationTables
 						EventType = EventType.womens
 					};
 					break;
-				case "Women's Doubles 3.5/4.0 - Age 55+ (both partners must be 55+)":
+                case "Women's Doubles 4.0":
+                    result = new Event
+                    {
+                        PartnerName = partnerName,
+                        DivisionLevel = DivisionLevel.l40,
+                        EventType = EventType.womens
+                    };
+                    break;
+                case "Women's Doubles 4.5+":
+                    result = new Event
+                    {
+                        PartnerName = partnerName,
+                        DivisionLevel = DivisionLevel.l45plus,
+                        EventType = EventType.womens
+                    };
+                    break;
+                case "Women's Doubles 3.5/4.0 - Age 55+ (both partners must be 55+)":
 					result = new Event
 					{
 						PartnerName = partnerName,
