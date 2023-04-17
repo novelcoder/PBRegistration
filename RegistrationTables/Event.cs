@@ -9,6 +9,43 @@ namespace RegistrationTables
         public DivisionLevel DivisionLevel = DivisionLevel.none;
         public string PartnerName = string.Empty;
 
+        public static List<Tuple<EventType, DivisionLevel>> DayOneDivisions()
+        {
+            return new List<Tuple<EventType, DivisionLevel>>()
+            {
+                new Tuple<EventType, DivisionLevel>(EventType.womens, DivisionLevel.l25),
+                new Tuple<EventType, DivisionLevel>(EventType.womens, DivisionLevel.l30),
+                new Tuple<EventType, DivisionLevel>(EventType.womens, DivisionLevel.s25_30),
+                new Tuple<EventType, DivisionLevel>(EventType.womens, DivisionLevel.s35plus),
+                new Tuple<EventType, DivisionLevel>(EventType.mens, DivisionLevel.l25),
+                new Tuple<EventType, DivisionLevel>(EventType.mens, DivisionLevel.l30),
+                new Tuple<EventType, DivisionLevel>(EventType.mens, DivisionLevel.s25_30),
+                new Tuple<EventType, DivisionLevel>(EventType.mens, DivisionLevel.s35plus),
+                new Tuple<EventType, DivisionLevel>(EventType.mixed, DivisionLevel.l25),
+                new Tuple<EventType, DivisionLevel>(EventType.mixed, DivisionLevel.l30),
+                new Tuple<EventType, DivisionLevel>(EventType.mixed, DivisionLevel.s25_30),
+                new Tuple<EventType, DivisionLevel>(EventType.mixed, DivisionLevel.s35plus)
+
+            };
+        }
+
+        public static List<Tuple<EventType, DivisionLevel>> DayTwoDivisions()
+        {
+            return new List<Tuple<EventType, DivisionLevel>>()
+            {
+                new Tuple<EventType, DivisionLevel>(EventType.womens, DivisionLevel.l35),
+                new Tuple<EventType, DivisionLevel>(EventType.womens, DivisionLevel.l40),
+                new Tuple<EventType, DivisionLevel>(EventType.womens, DivisionLevel.l45plus),
+                new Tuple<EventType, DivisionLevel>(EventType.mens, DivisionLevel.l35),
+                new Tuple<EventType, DivisionLevel>(EventType.mens, DivisionLevel.l40),
+                new Tuple<EventType, DivisionLevel>(EventType.mens, DivisionLevel.l45),
+                new Tuple<EventType, DivisionLevel>(EventType.mixed, DivisionLevel.l30),
+                new Tuple<EventType, DivisionLevel>(EventType.mixed, DivisionLevel.l40),
+                new Tuple<EventType, DivisionLevel>(EventType.mixed, DivisionLevel.l45plus)
+
+            };
+        }
+
         public static bool IsDayOne(DivisionLevel divisionLevel)
         {
             if ( divisionLevel == DivisionLevel.s25_30
