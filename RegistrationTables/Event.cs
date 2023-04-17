@@ -40,6 +40,7 @@ namespace RegistrationTables
                 new Tuple<EventType, DivisionLevel>(EventType.mens, DivisionLevel.l40),
                 new Tuple<EventType, DivisionLevel>(EventType.mens, DivisionLevel.l45),
                 new Tuple<EventType, DivisionLevel>(EventType.mixed, DivisionLevel.l30),
+                new Tuple<EventType, DivisionLevel>(EventType.mixed, DivisionLevel.l35),
                 new Tuple<EventType, DivisionLevel>(EventType.mixed, DivisionLevel.l40),
                 new Tuple<EventType, DivisionLevel>(EventType.mixed, DivisionLevel.l45plus)
 
