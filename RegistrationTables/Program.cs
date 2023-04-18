@@ -15,7 +15,7 @@ partial class Program
         Console.WriteLine("start reader");
 
 
-        using (var writer = new StreamWriter("/users/jamesgreenwood/OneDrive/Pickleball/data/MayDayMeleeReports.csv", false))
+        //using (var writer = new StreamWriter("/users/jamesgreenwood/OneDrive/Pickleball/data/MayDayMeleeReports.csv", false))
         //using (var rdr = new StreamReader("/users/jamesgreenwood/OneDrive/Pickleball/data/Form Responses.csv"))
         {
             var rr = new ResponseReader();
@@ -23,6 +23,7 @@ partial class Program
 
             var records = rr.ReadSheet();
             var people = Registration.Parse(records);
+
 
             // Division reports
             IndividualDivisionReports(sheetWriter, people);
@@ -34,6 +35,11 @@ partial class Program
             var dataToWrite = AllDivisionReport(people);
             sheetWriter.EraseSheetData("ALL Divisions!A1:Y");
             sheetWriter.BulkWriteRange("ALL Divisions!A1:Y", dataToWrite);
+
+            // Full Data
+            dataToWrite = FullDataReport(people);
+            sheetWriter.EraseSheetData("FullData!A1:Y");
+            sheetWriter.BulkWriteRange("FullData!A1:Y", dataToWrite);
 
             //Check In Report
             dataToWrite = CheckInReport(people);
@@ -65,8 +71,8 @@ partial class Program
             dataToWrite = MissingPeopleData(missingPeople);
             sheetWriter.BulkWriteRange(sheetName, dataToWrite);
         }
-        Console.WriteLine("Press [ENTER] to continue.");
-        Console.ReadLine();
+        //Console.WriteLine("Press [ENTER] to continue.");
+        //Console.ReadLine();
     }
 
     private static List<IList<object>> MailChimpUpload(List<Person> people)
@@ -255,10 +261,41 @@ partial class Program
                     var divisionLevel = (DivisionLevel)blvl;
                     var divisionData = Person.PrintDivision(list, eType, divisionLevel);
                     var tabName = Event.DivisionTabName(eType, divisionLevel);
+                    writer.EraseSheetData(tabName);
                     writer.BulkWriteRange(tabName, divisionData);
                 }
             }
         }
+    }
+
+
+    //
+    // FullData
+    //
+    private static List<IList<object>> FullDataReport(List<Person> people)
+    {
+        var result = new List<IList<object>>();
+
+        result.Add(new List<object> { "Name", "Email", "Phone", "Due", "Event 1", "Partner", "Event 2", "Partner" });
+
+        foreach (var person in people)
+        {
+            var row = new List<object>();
+
+            row.Add(person.Name);
+            row.Add(person.Email);
+            row.Add(person.PhoneNumber);
+            row.Add(Event.Due(person.Events));
+
+            foreach (var evt in person.Events)
+            {
+                row.Add(Event.DivisionTabName(evt.EventType, evt.DivisionLevel));
+                row.Add(evt.PartnerName);
+            }
+            result.Add(row);
+        }
+
+        return result;
     }
 
     //

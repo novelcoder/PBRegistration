@@ -10,11 +10,6 @@ namespace RegistrationTables
 {
 	public class ResponseReader
     {
-        //private string _pathToCredentials = "/users/jamesgreenwood/Projects/RegistrationTables/RegistrationTables/pbtournament-81d8134df6b8.json";
-        //private string[] _scopes = { SheetsService.Scope.Spreadsheets }; // Change this if you're accessing Drive or Docs
-        //private string _applicationName = "PBTournament";
-        //private string _spreadsheetId = "1AA--AFHnwpLzI9LyLI68IE0JMfQrlpjX5nkaiNpTXA4";
-        //private SheetsService _sheetsService;
         private Spreadsheet _spreadsheet = new Spreadsheet();
 
         public ResponseReader()
@@ -122,24 +117,6 @@ namespace RegistrationTables
             }
             return registration;
         }
-
-        //private void ConnectToGoogle()
-        //{
-        //    GoogleCredential credential;
-
-        //    // Put your credentials json file in the root of the solution and make sure copy to output dir property is set to always copy 
-        //    using (var stream = new FileStream(_pathToCredentials, FileMode.Open, FileAccess.Read))
-        //    {
-        //        credential = GoogleCredential.FromStream(stream).CreateScoped(_scopes);
-        //    }
-
-        //    // Create Google Sheets API service.
-        //    _sheetsService = new SheetsService(new BaseClientService.Initializer()
-        //    {
-        //        HttpClientInitializer = credential,
-        //        ApplicationName = _applicationName
-        //    });
-        //}
     }
 }
 
