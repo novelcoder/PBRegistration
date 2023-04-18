@@ -27,8 +27,9 @@ namespace RegistrationTables
 		public string MensPartnerEmail = string.Empty;
 
 		private static List<string> ignoreNames = new List<string> { "None", "none", "jim test", "Jim test woman", "xxx", "Not entered in mixed", "matthew test", "Cindy DeCoster" };
-		private static Dictionary<string, string> translateName = new Dictionary<string, string> { { "Matt Acker", "Matthew Acker" } };
+		private static Dictionary<string, string> translateName = new Dictionary<string, string> { { "M", string.Empty }, { "Jen Stai", "Jennifer Stai" }, { "Matt Acker", "Matthew Acker" }, { "Charles Robeson", "Charles Roberson" } };
 		private static Dictionary<string, string> translateEmail = new Dictionary<string, string> { { "acker.matthee3@gmail.com", "acker.matthew3@gmail.com" } };
+		private static List<string> ignorePartnerNames = new List<string> { "Not entered in mixed", "None" };
 
         internal static List<Person> Parse(IEnumerable<Registration> records)
         {
@@ -68,35 +69,17 @@ namespace RegistrationTables
 					var womensEvent = BuildEvent(record.WomensBracket, record.WomensPartnerName);
 					var partner = persons.FirstOrDefault(x => x.Name == record.WomensPartnerName.Trim());
 					AddEvent(person, womensEvent);
-					if (partner != null)
-						AddPartnerEvent(person, partner, womensEvent);
-					else
-                    {
-                        if (!string.IsNullOrWhiteSpace(record.WomensPartnerName))
-                            Console.WriteLine($"Registration.Parse {record.WomensPartnerName} not found");
-					}
+					AddPartnerEvent(person, partner, womensEvent, record.WomensPartnerName);
 
 					var mensEvent = BuildEvent(record.MensBracket, record.MensPartnerName);
 					partner = persons.FirstOrDefault(x => x.Name == record.MensPartnerName.Trim());
 					AddEvent(person, mensEvent);
-					if (partner != null)
-						AddPartnerEvent(person, partner, mensEvent);
-					else
-                    {
-                        if (!string.IsNullOrWhiteSpace(record.MensPartnerName))
-                            Console.WriteLine($"Registration.Parse {record.MensPartnerName} not found");
-					}
+					AddPartnerEvent(person, partner, mensEvent, record.MensPartnerName);
 
 					var mixedEvent = BuildEvent(record.MixedBracket, record.MixedPartnerName);
 					partner = persons.FirstOrDefault(x => x.Name == record.MixedPartnerName.Trim());
 					AddEvent(person, mixedEvent);
-					if (partner != null)
-						AddPartnerEvent(person, partner, mixedEvent);
-					else
-                    {
-                        if (!string.IsNullOrWhiteSpace(record.MixedPartnerName))
-                            Console.WriteLine($"Registration.Parse {record.MixedPartnerName} not found");
-					}
+					AddPartnerEvent(person, partner, mixedEvent, record.MixedPartnerName);
 				}
 				else
 				{
@@ -109,9 +92,15 @@ namespace RegistrationTables
 			return persons;
         }
 
-		private static void AddPartnerEvent(Person person, Person partner, Event? eventToAdd)
+		private static void AddPartnerEvent(Person person, Person? partner, Event? eventToAdd,string partnerName)
 		{
-			if (eventToAdd != null)
+			if (partner == null)
+			{
+                if ( ! string.IsNullOrWhiteSpace(partnerName)
+				  && ignorePartnerNames.FirstOrDefault(x => x == partnerName) == null)
+                    Console.WriteLine($"Registration.Parse Partner({partnerName}) not found");
+            }
+			else if (eventToAdd != null)
 			{ 
 				var partnerEvent = new Event
 				{
@@ -222,6 +211,14 @@ namespace RegistrationTables
 						EventType = EventType.mixed
 					};
 					break;
+				case "Mixed Doubles 2.5/3.0 - Age 55+ (both partners must be 55+)":
+                    result = new Event
+                    {
+                        PartnerName = partnerName,
+                        DivisionLevel = DivisionLevel.s25_30,
+                        EventType = EventType.mixed
+                    };
+                    break;
 				case "Not Playing Men's Doubles":
 					break;
 				case "Not playing Mixed Doubles":
@@ -367,7 +364,7 @@ namespace RegistrationTables
 					sb.Append("4.5+");
                     break;
                 case DivisionLevel.s25_30:
-                    sb.Append("55+ - 2.5, 3.5");
+                    sb.Append("55+ - 2.5, 3.0");
                     break;
                 case DivisionLevel.s35plus:
 					sb.Append("55+ - 3.5+");
