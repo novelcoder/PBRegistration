@@ -24,6 +24,10 @@ partial class Program
             var records = rr.ReadSheet();
             var people = Registration.Parse(records);
 
+            var paymentReader = new ReadPayments();
+            var payments = paymentReader.ReadSpreadsheet();
+
+            List<IList<object>> dataToWrite = null;
 
             // Division reports
             IndividualDivisionReports(sheetWriter, people);
@@ -32,7 +36,7 @@ partial class Program
             ShirtReport(sheetWriter, people);
 
             //All Division Reports
-            var dataToWrite = AllDivisionReport(people);
+            dataToWrite = AllDivisionReport(people);
             sheetWriter.EraseSheetData("ALL Divisions!A1:Y");
             sheetWriter.BulkWriteRange("ALL Divisions!A1:Y", dataToWrite);
 
@@ -47,7 +51,7 @@ partial class Program
             sheetWriter.BulkWriteRange("Check In!A1:Y", dataToWrite);
 
             //Partner Email
-            dataToWrite = PartnerEmail(people);
+            dataToWrite = PartnerEmailReport.PartnerEmail(people, payments);
             sheetWriter.EraseSheetData("PartnerEmail!A1:Y");
             sheetWriter.BulkWriteRange("PartnerEmail!A1:Y", dataToWrite);
 
@@ -57,13 +61,13 @@ partial class Program
             sheetWriter.BulkWriteRange("MailChimp!A1:Y", dataToWrite);
 
             //Payments
-            var paymentReader = new ReadPayments();
-            var payments = paymentReader.ReadSpreadsheet();
+
+
             var sheetName = $"Payments!A{payments.Count() + 1}";
             var missingPeople = new List<Person>();
-            foreach ( var person in people)
+            foreach (var person in people)
             {
-                if (payments.FirstOrDefault( x => x.Name == person.Name) == null )
+                if (payments.FirstOrDefault(x => x.Name == person.Name) == null)
                 {
                     missingPeople.Add(person);
                 }
@@ -136,31 +140,6 @@ partial class Program
         return result;
     }
 
-    private static List<IList<object>> PartnerEmail(List<Person> people)
-    {
-        var result = new List<IList<object>>();
-        var colData = new List<object>();
-
-        result.Add(new List<object>() { "Player / Partner", "Division", "Player Due", "Partner Due", "Emails" });
-        foreach (var person in people)
-        {
-            foreach (var evt in person.Events)
-            {
-                var partner = people.FirstOrDefault(x => x.Name == evt.PartnerName);
-                if (partner != null)
-                {
-                    colData = new List<object>();
-                    colData.Add($"{person.Name} / {partner.Name}");
-                    colData.Add(Registration.DivisionName(evt));
-                    colData.Add(Event.Due(person.Events));
-                    colData.Add(Event.Due(partner.Events));
-                    colData.Add($"{person.Email}; {partner.Email}");
-                    result.Add(colData);
-                }
-            }
-        }
-        return result;
-    }
     private static List<IList<object>> CheckInReport(List<Person> people)
     {
         var result = new List<IList<object>>();
