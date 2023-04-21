@@ -14,55 +14,68 @@ partial class Program
     {
         Console.WriteLine("start reader");
 
+        var rr = new ResponseReader();
+        var sheetWriter = new SheetWriter();
 
-        //using (var writer = new StreamWriter("/users/jamesgreenwood/OneDrive/Pickleball/data/MayDayMeleeReports.csv", false))
-        //using (var rdr = new StreamReader("/users/jamesgreenwood/OneDrive/Pickleball/data/Form Responses.csv"))
-        {
-            var rr = new ResponseReader();
-            var sheetWriter = new SheetWriter();
+        var records = rr.ReadSheet();
+        var people = Registration.Parse(records);
 
-            var records = rr.ReadSheet();
-            var people = Registration.Parse(records);
+        var paymentReader = new ReadPayments();
+        var payments = paymentReader.ReadSpreadsheet();
 
-            var paymentReader = new ReadPayments();
-            var payments = paymentReader.ReadSpreadsheet();
+        List<IList<object>> dataToWrite = null;
 
-            List<IList<object>> dataToWrite = null;
+        bool partnerOnly = true; //for debugging, set true
 
-            // Division reports
+        // Division reports
+        if ( ! partnerOnly )
             IndividualDivisionReports(sheetWriter, people);
 
-            // Shirts Report
+        // Shirts Report
+        if (!partnerOnly)
             ShirtReport(sheetWriter, people);
 
-            //All Division Reports
+        //All Division Reports
+
+        if (!partnerOnly)
+        {
             dataToWrite = AllDivisionReport(people);
             sheetWriter.EraseSheetData("ALL Divisions!A1:Y");
             sheetWriter.BulkWriteRange("ALL Divisions!A1:Y", dataToWrite);
+        }
 
-            // Full Data
+        // Full Data
+        if (!partnerOnly)
+        {
             dataToWrite = FullDataReport(people);
             sheetWriter.EraseSheetData("FullData!A1:Y");
             sheetWriter.BulkWriteRange("FullData!A1:Y", dataToWrite);
+        }
 
-            //Check In Report
+        //Check In Report
+        if (!partnerOnly)
+        {
             dataToWrite = CheckInReport(people);
             sheetWriter.EraseSheetData("Check In!A1:Y");
             sheetWriter.BulkWriteRange("Check In!A1:Y", dataToWrite);
+        }
 
-            //Partner Email
-            dataToWrite = PartnerEmailReport.PartnerEmail(people, payments);
-            sheetWriter.EraseSheetData("PartnerEmail!A1:Y");
-            sheetWriter.BulkWriteRange("PartnerEmail!A1:Y", dataToWrite);
+        //Partner Email
+        dataToWrite = PartnerEmailReport.PartnerEmail(people, payments);
+        sheetWriter.EraseSheetData("PartnerEmail!A1:Y");
+        sheetWriter.BulkWriteRange("PartnerEmail!A1:Y", dataToWrite);
 
-            //MailChimp Upload
+        //MailChimp Upload
+        if (!partnerOnly)
+        {
             dataToWrite = MailChimpUpload(people);
             sheetWriter.EraseSheetData("MailChimp!A1:Y");
             sheetWriter.BulkWriteRange("MailChimp!A1:Y", dataToWrite);
+        }
 
-            //Payments
-
-
+        //Payments
+        if (!partnerOnly)
+        {
             var sheetName = $"Payments!A{payments.Count() + 1}";
             var missingPeople = new List<Person>();
             foreach (var person in people)
@@ -75,8 +88,6 @@ partial class Program
             dataToWrite = MissingPeopleData(missingPeople);
             sheetWriter.BulkWriteRange(sheetName, dataToWrite);
         }
-        //Console.WriteLine("Press [ENTER] to continue.");
-        //Console.ReadLine();
     }
 
     private static List<IList<object>> MailChimpUpload(List<Person> people)

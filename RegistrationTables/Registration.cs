@@ -27,7 +27,8 @@ namespace RegistrationTables
 		public string MensPartnerEmail = string.Empty;
 
 		private static List<string> ignoreNames = new List<string> { "None", "none", "jim test", "Jim test woman", "xxx", "Not entered in mixed", "matthew test", "Cindy DeCoster" };
-		private static Dictionary<string, string> translateName = new Dictionary<string, string> { { "M", string.Empty }, { "Jen Stai", "Jennifer Stai" }, { "Matt Acker", "Matthew Acker" }, { "Charles Robeson", "Charles Roberson" } };
+		private static Dictionary<string, string> translateName
+			= new Dictionary<string, string> { { "brian TeKolste", "Brian TeKolste" }, { "M", string.Empty }, { "Jen Stai", "Jennifer Stai" }, { "Matt Acker", "Matthew Acker" }, { "Charles Robeson", "Charles Roberson" } };
 		private static Dictionary<string, string> translateEmail = new Dictionary<string, string> { { "acker.matthee3@gmail.com", "acker.matthew3@gmail.com" } };
 		private static List<string> ignorePartnerNames = new List<string> { "Not entered in mixed", "None" };
 
@@ -219,7 +220,16 @@ namespace RegistrationTables
                         EventType = EventType.mixed
                     };
                     break;
-				case "Not Playing Men's Doubles":
+				case "Mixed Doubles 3.5/4.0 - Age 55+ (both partners must be 55+)":
+                    result = new Event
+                    {
+                        PartnerName = partnerName,
+                        DivisionLevel = DivisionLevel.s35plus,
+                        EventType = EventType.mixed
+                    };
+                    break;
+
+                case "Not Playing Men's Doubles":
 					break;
 				case "Not playing Mixed Doubles":
 					break;
