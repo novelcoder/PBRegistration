@@ -169,7 +169,7 @@ namespace RegistrationTables
         {
             var sb = new StringBuilder();
             sb.Append(salutation);
-            sb.Append($"I show your registration for {div}.\n\n");
+            sb.Append($"I show you are registered for {div}.\n\n");
             sb.Append("Unfortunately, some of your information is missing and we cannot complete your registration. Please reply to this email with the following information.\n\n\n");
             sb.Append($"Please let me know if you have any questions.\n\n");
             sb.Append("Cindy");

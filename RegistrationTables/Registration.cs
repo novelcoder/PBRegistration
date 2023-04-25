@@ -27,8 +27,15 @@ namespace RegistrationTables
 		public string MensPartnerEmail = string.Empty;
 
 		private static List<string> ignoreNames = new List<string> { "None", "none", "jim test", "Jim test woman", "xxx", "Not entered in mixed", "matthew test", "Cindy DeCoster" };
+		// make sure key is lower case
 		private static Dictionary<string, string> translateName
-			= new Dictionary<string, string> { { "brian TeKolste", "Brian TeKolste" }, { "M", string.Empty }, { "Jen Stai", "Jennifer Stai" }, { "Matt Acker", "Matthew Acker" }, { "Charles Robeson", "Charles Roberson" } };
+			= new Dictionary<string, string> {
+				{ "jose casarin", "José Casarin" },
+				{ "brian tekolste", "Brian TeKolste" },
+				{ "m", string.Empty },
+				{ "jen stai", "Jennifer Stai" },
+				{ "matt acker", "Matthew Acker" },
+				{ "charles robeson", "Charles Roberson" } };
 		private static Dictionary<string, string> translateEmail = new Dictionary<string, string> { { "acker.matthee3@gmail.com", "acker.matthew3@gmail.com" } };
 		private static List<string> ignorePartnerNames = new List<string> { "Not entered in mixed", "None" };
 
@@ -129,8 +136,16 @@ namespace RegistrationTables
         {
 			Event? result = null;
 			switch (bracket)
-			{
-				case "Men's Doubles 3.0":
+            {
+                case "Men's Doubles 2.5":
+                    result = new Event
+                    {
+                        PartnerName = partnerName,
+                        DivisionLevel = DivisionLevel.l25,
+                        EventType = EventType.mens
+                    };
+                    break;
+                case "Men's Doubles 3.0":
 					result = new Event
 					{
 						PartnerName = partnerName,
@@ -323,7 +338,7 @@ namespace RegistrationTables
         private static string TranslateName(string name)
         {
             string result = name;
-			if (translateName.TryGetValue(name.Trim(), out result))
+			if (translateName.TryGetValue(name.Trim().ToLower(), out result))
 				return result;
 			else
 				return name;
