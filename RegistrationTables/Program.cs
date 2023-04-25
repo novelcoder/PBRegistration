@@ -25,69 +25,64 @@ partial class Program
 
         List<IList<object>> dataToWrite = null;
 
-        bool partnerOnly = true; //for debugging, set true
-
         // Division reports
-        if ( ! partnerOnly )
-            IndividualDivisionReports(sheetWriter, people);
+        Console.WriteLine("Division Reports");
+        IndividualDivisionReports(sheetWriter, people);
 
         // Shirts Report
-        if (!partnerOnly)
+        Console.WriteLine("Shirts Report");
             ShirtReport(sheetWriter, people);
 
         //All Division Reports
-
-        if (!partnerOnly)
-        {
-            dataToWrite = AllDivisionReport(people);
-            sheetWriter.EraseSheetData("ALL Divisions!A1:Y");
-            sheetWriter.BulkWriteRange("ALL Divisions!A1:Y", dataToWrite);
-        }
+        Console.WriteLine("All Division Report");
+        dataToWrite = AllDivisionReport(people);
+        sheetWriter.EraseSheetData("ALL Divisions!A1:Y");
+        sheetWriter.BulkWriteRange("ALL Divisions!A1:Y", dataToWrite);
 
         // Full Data
-        if (!partnerOnly)
-        {
-            dataToWrite = FullDataReport(people);
-            sheetWriter.EraseSheetData("FullData!A1:Y");
-            sheetWriter.BulkWriteRange("FullData!A1:Y", dataToWrite);
-        }
+        Console.WriteLine("Full Data Report");
+        dataToWrite = FullDataReport(people);
+        sheetWriter.EraseSheetData("FullData!A1:Y");
+        sheetWriter.BulkWriteRange("FullData!A1:Y", dataToWrite);
 
         //Check In Report
-        if (!partnerOnly)
-        {
-            dataToWrite = CheckInReport(people);
-            sheetWriter.EraseSheetData("Check In!A1:Y");
-            sheetWriter.BulkWriteRange("Check In!A1:Y", dataToWrite);
-        }
+        Console.WriteLine("Check In Report");
+        dataToWrite = CheckInReport(people);
+        sheetWriter.EraseSheetData("Check In!A1:Y");
+        sheetWriter.BulkWriteRange("Check In!A1:Y", dataToWrite);
 
         //Partner Email
+        Console.WriteLine("PartnerEmail Report");
         dataToWrite = PartnerEmailReport.PartnerEmail(people, payments);
         sheetWriter.EraseSheetData("PartnerEmail!A1:Y");
         sheetWriter.BulkWriteRange("PartnerEmail!A1:Y", dataToWrite);
 
         //MailChimp Upload
-        if (!partnerOnly)
-        {
-            dataToWrite = MailChimpUpload(people);
-            sheetWriter.EraseSheetData("MailChimp!A1:Y");
-            sheetWriter.BulkWriteRange("MailChimp!A1:Y", dataToWrite);
-        }
+        Console.WriteLine("MailChimp Upload");
+        dataToWrite = MailChimpUpload(people);
+        sheetWriter.EraseSheetData("MailChimp!A1:Y");
+        sheetWriter.BulkWriteRange("MailChimp!A1:Y", dataToWrite);
 
         //Payments
-        if (!partnerOnly)
+        Console.WriteLine("Payments Report");
+        dataToWrite = PaymentsReport(people, payments);
+        sheetWriter.BulkWriteRange($"Payments!A{payments.Count() + 1}", dataToWrite);
+
+        Console.WriteLine("Done");
+    }
+
+    private static List<IList<object>> PaymentsReport(List<Person> people, List<Payment> payments)
+    {
+        var missingPeople = new List<Person>();
+        foreach (var person in people)
         {
-            var sheetName = $"Payments!A{payments.Count() + 1}";
-            var missingPeople = new List<Person>();
-            foreach (var person in people)
+            if (payments.FirstOrDefault(x => x.Name == person.Name) == null)
             {
-                if (payments.FirstOrDefault(x => x.Name == person.Name) == null)
-                {
-                    missingPeople.Add(person);
-                }
+                missingPeople.Add(person);
             }
-            dataToWrite = MissingPeopleData(missingPeople);
-            sheetWriter.BulkWriteRange(sheetName, dataToWrite);
         }
+
+        return MissingPeopleData(missingPeople);
     }
 
     private static List<IList<object>> MailChimpUpload(List<Person> people)
@@ -122,7 +117,7 @@ partial class Program
             colData.Add(firstName);
             colData.Add(last);
             colData.Add($"'{person.PhoneNumber}");
-            colData.Add($"\"MDM23,{sb.ToString()}\"");
+            colData.Add($"MDM23,{sb.ToString()}");
             result.Add(colData);
         }
 
