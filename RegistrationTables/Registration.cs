@@ -32,11 +32,13 @@ namespace RegistrationTables
 			= new Dictionary<string, string> {
 				{ "jose casarin", "José Casarin" },
 				{ "brian tekolste", "Brian TeKolste" },
-				{ "m", string.Empty },
+                { "matthew barlow", "Matt Barlow" },
+                { "m", string.Empty },
 				{ "jen stai", "Jennifer Stai" },
 				{ "matt acker", "Matthew Acker" },
 				{ "charles robeson", "Charles Roberson" } };
-		private static Dictionary<string, string> translateEmail = new Dictionary<string, string> { { "acker.matthee3@gmail.com", "acker.matthew3@gmail.com" } };
+		private static Dictionary<string, string> translateEmail = new Dictionary<string, string> {
+				{ "acker.matthee3@gmail.com", "acker.matthew3@gmail.com" } };
 		private static List<string> ignorePartnerNames = new List<string> { "Not entered in mixed", "None" };
 
         internal static List<Person> Parse(IEnumerable<Registration> records)
@@ -71,21 +73,21 @@ namespace RegistrationTables
 			// second, add events
 			foreach ( var record in recList)
 			{
-				var person = persons.FirstOrDefault(x => x.Name == record.Name.Trim());
+				var person = persons.FirstOrDefault(x => x.Name.Equals(record.Name.Trim(), StringComparison.CurrentCultureIgnoreCase));
 				if (person != null)
 				{
 					var womensEvent = BuildEvent(record.WomensBracket, record.WomensPartnerName);
-					var partner = persons.FirstOrDefault(x => x.Name == record.WomensPartnerName.Trim());
+					var partner = persons.FirstOrDefault(x => x.Name.Equals(record.WomensPartnerName.Trim(), StringComparison.CurrentCultureIgnoreCase));
 					AddEvent(person, womensEvent);
 					AddPartnerEvent(person, partner, womensEvent, record.WomensPartnerName);
 
 					var mensEvent = BuildEvent(record.MensBracket, record.MensPartnerName);
-					partner = persons.FirstOrDefault(x => x.Name == record.MensPartnerName.Trim());
+					partner = persons.FirstOrDefault(x => x.Name.Equals(record.MensPartnerName.Trim(), StringComparison.CurrentCultureIgnoreCase));
 					AddEvent(person, mensEvent);
 					AddPartnerEvent(person, partner, mensEvent, record.MensPartnerName);
 
 					var mixedEvent = BuildEvent(record.MixedBracket, record.MixedPartnerName);
-					partner = persons.FirstOrDefault(x => x.Name == record.MixedPartnerName.Trim());
+					partner = persons.FirstOrDefault(x => x.Name.Equals(record.MixedPartnerName.Trim(), StringComparison.CurrentCultureIgnoreCase));
 					AddEvent(person, mixedEvent);
 					AddPartnerEvent(person, partner, mixedEvent, record.MixedPartnerName);
 				}
@@ -178,7 +180,16 @@ namespace RegistrationTables
 						EventType = EventType.mens
 					};
 					break;
-				case "Men's Doubles 3.5/4.0 - Age 55+ (both partners must be 55+)":
+				case "Mixed Doubles 2.5/3.0 - Age 55+ (both partners must be 55+)":
+                    result = new Event
+                    {
+                        PartnerName = partnerName,
+                        DivisionLevel = DivisionLevel.s25_30,
+                        EventType = EventType.mixed
+                    };
+                    break;
+
+                case "Men's Doubles 3.5/4.0 - Age 55+ (both partners must be 55+)":
                     result = new Event
                     {
                         PartnerName = partnerName,
@@ -227,14 +238,6 @@ namespace RegistrationTables
 						EventType = EventType.mixed
 					};
 					break;
-				case "Mixed Doubles 2.5/3.0 - Age 55+ (both partners must be 55+)":
-                    result = new Event
-                    {
-                        PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.s25_30,
-                        EventType = EventType.mixed
-                    };
-                    break;
 				case "Mixed Doubles 3.5/4.0 - Age 55+ (both partners must be 55+)":
                     result = new Event
                     {
@@ -311,7 +314,7 @@ namespace RegistrationTables
         {
 			if ( ! string.IsNullOrWhiteSpace(name)
 			  && ignoreNames.FirstOrDefault(x => x == name.Trim()) == null 
-			  && persons.FirstOrDefault(x => x.Name == name.Trim()) == null )
+			  && persons.FirstOrDefault(x => x.Name.Equals(name.Trim(), StringComparison.CurrentCultureIgnoreCase)) == null )
 			{
 				var ss = shirtSize;
 				if (shirtSize == "Extra Large")
