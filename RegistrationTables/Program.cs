@@ -19,55 +19,65 @@ partial class Program
 
         var records = rr.ReadSheet();
         var people = Registration.Parse(records);
+        Console.WriteLine($"{records.Count} records. {people.Count} people.");
+        foreach ( var person in people)
+        {
+            Console.WriteLine($"\t{person.Name} number events {person.Events.Count}");
+            foreach ( var evt in person.Events)
+            {
+                Console.WriteLine($"\t\t{evt.PartnerName}\t{evt.Tournament}\t{evt.DivisionLevel}\t{evt.EventType}");
+            }
+        }
+        Console.WriteLine("parsing complete. [enter] to continue.");
+        Console.ReadLine();
 
-        var paymentReader = new ReadPayments();
-        var payments = paymentReader.ReadSpreadsheet();
+        //var paymentReader = new ReadPayments();
+        //var payments = paymentReader.ReadSpreadsheet();
 
-        List<IList<object>> dataToWrite = null;
+        //List<IList<object>> dataToWrite = null;
 
-        // Division reports
-        Console.WriteLine("Division Reports");
-        IndividualDivisionReports(sheetWriter, people);
+        //// Division reports
+        //Console.WriteLine("Division Reports");
+        //IndividualDivisionReports(sheetWriter, people);
 
-        // Shirts Report
-        Console.WriteLine("Shirts Report");
-            ShirtReport(sheetWriter, people);
+        //// Shirts Report
+        //Console.WriteLine("Shirts Report");
+        //    ShirtReport(sheetWriter, people);
 
-        //All Division Reports
-        Console.WriteLine("All Division Report");
-        dataToWrite = AllDivisionReport(people);
-        sheetWriter.EraseSheetData("ALL Divisions!A1:Y");
-        sheetWriter.BulkWriteRange("ALL Divisions!A1:Y", dataToWrite);
+        ////All Division Reports
+        //Console.WriteLine("All Division Report");
+        //dataToWrite = AllDivisionReport(people);
+        //sheetWriter.EraseSheetData("ALL Divisions!A1:Y");
+        //sheetWriter.BulkWriteRange("ALL Divisions!A1:Y", dataToWrite);
 
-        // Full Data
-        Console.WriteLine("Full Data Report");
-        dataToWrite = FullDataReport(people);
-        sheetWriter.EraseSheetData("FullData!A1:Y");
-        sheetWriter.BulkWriteRange("FullData!A1:Y", dataToWrite);
+        //// Full Data
+        //Console.WriteLine("Full Data Report");
+        //dataToWrite = FullDataReport(people);
+        //sheetWriter.EraseSheetData("FullData!A1:Y");
+        //sheetWriter.BulkWriteRange("FullData!A1:Y", dataToWrite);
 
-        //Check In Report
-        Console.WriteLine("Check In Report");
-        dataToWrite = CheckInReport(people);
-        sheetWriter.EraseSheetData("Check In!A1:Y");
-        sheetWriter.BulkWriteRange("Check In!A1:Y", dataToWrite);
+        ////Check In Report
+        //Console.WriteLine("Check In Report");
+        //dataToWrite = CheckInReport(people);
+        //sheetWriter.EraseSheetData("Check In!A1:Y");
+        //sheetWriter.BulkWriteRange("Check In!A1:Y", dataToWrite);
 
-        //Partner Email
-        Console.WriteLine("PartnerEmail Report");
-        dataToWrite = PartnerEmailReport.PartnerEmail(people, payments);
-        sheetWriter.EraseSheetData("PartnerEmail!A1:Y");
-        sheetWriter.BulkWriteRange("PartnerEmail!A1:Y", dataToWrite);
+        ////Partner Email
+        //Console.WriteLine("PartnerEmail Report");
+        //dataToWrite = PartnerEmailReport.PartnerEmail(people, payments);
+        //sheetWriter.EraseSheetData("PartnerEmail!A1:Y");
+        //sheetWriter.BulkWriteRange("PartnerEmail!A1:Y", dataToWrite);
 
-        //MailChimp Upload
-        Console.WriteLine("MailChimp Upload");
-        dataToWrite = MailChimpUpload(people);
-        sheetWriter.EraseSheetData("MailChimp!A1:Y");
-        sheetWriter.BulkWriteRange("MailChimp!A1:Y", dataToWrite);
+        ////MailChimp Upload
+        //Console.WriteLine("MailChimp Upload");
+        //dataToWrite = MailChimpUpload(people);
+        //sheetWriter.EraseSheetData("MailChimp!A1:Y");
+        //sheetWriter.BulkWriteRange("MailChimp!A1:Y", dataToWrite);
 
-        //Payments
-        Console.WriteLine("Payments Report");
-        dataToWrite = PaymentsReport(people, payments);
-        sheetWriter.BulkWriteRange($"Payments!A{payments.Count() + 1}", dataToWrite);
-
+        ////Payments
+        //Console.WriteLine("Payments Report");
+        //dataToWrite = PaymentsReport(people, payments);
+        //sheetWriter.BulkWriteRange($"Payments!A{payments.Count() + 1}", dataToWrit
         Console.WriteLine("Done");
     }
 
@@ -155,15 +165,13 @@ partial class Program
         //
         people.Sort((x, y) => x.Name.CompareTo(y.Name));
         // day one
-        colData.Add("Check In Report - Day One");
+        colData.Add("Check In Report");
         result.Add(colData);
         colData = new List<object>() { string.Empty };
         result.Add(colData);
 
         foreach (var person in people)
         {
-            if (Event.AnyDayOne(person.Events))
-            {
                 colData = new List<object>();
                 colData.Add($"{person.Name}");
                 colData.Add(Event.DisplayList(person.Events));
@@ -171,37 +179,11 @@ partial class Program
                 colData.Add(person.Email);
                 colData.Add(person.ShirtSize);
                 result.Add(colData);
-            }
-        }
-
-        // day two
-        colData = new List<object>() { string.Empty };
-        result.Add(colData);
-
-        colData = new List<object>();
-        colData.Add("Check In Report - Day Two");
-        result.Add(colData);
-
-        colData = new List<object>() { string.Empty };
-        result.Add(colData);
-
-        foreach (var person in people)
-        {
-            if (Event.AnyDayTwo(person.Events))
-            {
-                colData = new List<object>();
-                colData.Add($"{person.Name}");
-                colData.Add(Event.DisplayList(person.Events));
-                colData.Add(Event.Due(person.Events));
-                colData.Add(person.Email);
-                colData.Add(person.ShirtSize);
-                result.Add(colData);
-            }
         }
         return result;
     }
 
-    private static void ShirtReport(SheetWriter writer, List<Person> people)
+    private static void ShirtReport(SheetWriter writer, List<Person> people, string sheetId)
     {
         var result = new List<IList<object>>();
         var colData = new List<object>();
@@ -229,11 +211,11 @@ partial class Program
         colData.Add(string.Empty);
         colData.Add($"=sum(B1:B{result.Count()})");
         result.Add(colData);
-        writer.EraseSheetData("Shirts!A1:Y");
-        writer.BulkWriteRange("Shirts!A1:Y", result);
+        writer.EraseSheetData("Shirts!A1:Y", sheetId);
+        writer.BulkWriteRange("Shirts!A1:Y", result, sheetId);
     }
 
-    private static void IndividualDivisionReports(SheetWriter writer, List<Person> people)
+    private static void IndividualDivisionReports(SheetWriter writer, List<Person> people, string sheetId)
     {
         foreach (int evtType in Enum.GetValues(typeof(EventType)))
         {
@@ -246,8 +228,8 @@ partial class Program
                     var divisionLevel = (DivisionLevel)blvl;
                     var divisionData = Person.PrintDivision(list, eType, divisionLevel);
                     var tabName = Event.DivisionTabName(eType, divisionLevel);
-                    writer.EraseSheetData(tabName);
-                    writer.BulkWriteRange(tabName, divisionData);
+                    writer.EraseSheetData(tabName, sheetId);
+                    writer.BulkWriteRange(tabName, divisionData, sheetId);
                 }
             }
         }
@@ -290,9 +272,8 @@ partial class Program
     {
         var result = new List<IList<object>>();
         var divisionListsOne = new List<Tuple<string, List<Person>>>();
-        var divisionListsTwo = new List<Tuple<string, List<Person>>>();
 
-        foreach (var div in Event.DayOneDivisions())
+        foreach (var div in Event.Divisions())
         {
 
             var list = Person.DivisionList(people, div.Item1, div.Item2);
@@ -300,25 +281,16 @@ partial class Program
             divisionListsOne.Add(new Tuple<string, List<Person>>(division, list));
         }
 
-        foreach (var div in Event.DayTwoDivisions())
-        {
-
-            var list = Person.DivisionList(people, div.Item1, div.Item2);
-            var division = Registration.DivisionName(div.Item1, div.Item2);
-            divisionListsTwo.Add(new Tuple<string, List<Person>>(division, list));
-        }
-
-        AllDivisionDetails(result, divisionListsOne, "One");
-        AllDivisionDetails(result, divisionListsTwo, "Two");
+        AllDivisionDetails(result, divisionListsOne);
 
         return result;
     }
 
-    private static void AllDivisionDetails(List<IList<object>> dataToWrite, List<Tuple<string, List<Person>>> divisionLists, string day)
+    private static void AllDivisionDetails(List<IList<object>> dataToWrite, List<Tuple<string, List<Person>>> divisionLists)
     {
         bool written = true;
 
-        dataToWrite.Add( new List<object>() { $"Division List - Day {day}" } );
+        dataToWrite.Add( new List<object>() { $"Division List" } );
         dataToWrite.Add(new List<object>() { "" });
 
         // write headings

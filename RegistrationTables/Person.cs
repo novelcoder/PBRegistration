@@ -9,7 +9,18 @@ namespace RegistrationTables
         public string Email = string.Empty;
         public string ShirtSize = string.Empty;
         public string PhoneNumber = string.Empty;
+        public bool IsRegistered = false;
         public List<Event> Events = new List<Event>();
+
+        internal static Person? FindPerson(List<Person> persons, string name, string phoneNumber)
+        {
+            var result = persons.FirstOrDefault( x =>
+                string.Compare(x.Name, name, StringComparison.InvariantCultureIgnoreCase) == 0);
+            if (result == null)
+                result = persons.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
+
+            return result;
+        }
 
         internal bool ParticipatesIn(EventType type, DivisionLevel division)
         {

@@ -15,12 +15,12 @@ namespace RegistrationTables
             _spreadsheet.ConnectGoogle();
         }
 
-        public List<Payment> ReadSpreadsheet()
+        public List<Payment> ReadSpreadsheet(string sheetId)
         {
             var result = new List<Payment>();
 
             string range = "Payments!A1:Y200";
-            var data = _spreadsheet.SheetsService.Spreadsheets.Values.Get(Spreadsheet.MDMUploadSheetId, range).Execute();
+            var data = _spreadsheet.SheetsService.Spreadsheets.Values.Get(sheetId, range).Execute();
 
             for (int iii = 0; iii < data.Values.Count; iii++)
             {
