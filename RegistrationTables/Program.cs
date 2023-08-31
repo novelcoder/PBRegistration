@@ -15,26 +15,18 @@ partial class Program
         Console.WriteLine("start reader");
 
         var rr = new ResponseReader();
-        var sheetWriter = new SheetWriter();
 
         var records = rr.ReadSheet();
         var people = Registration.Parse(records);
-        Console.WriteLine($"{records.Count} records. {people.Count} people.");
-        foreach ( var person in people)
-        {
-            Console.WriteLine($"\t{person.Name} number events {person.Events.Count}");
-            foreach ( var evt in person.Events)
-            {
-                Console.WriteLine($"\t\t{evt.PartnerName}\t{evt.Tournament}\t{evt.DivisionLevel}\t{evt.EventType}");
-            }
-        }
-        Console.WriteLine("parsing complete. [enter] to continue.");
-        Console.ReadLine();
+
+        Console.WriteLine($"Pinked # People:{Person.CountPerTournament(people, Tournaments.pinked)}");
+        BuildSpreadsheets(Spreadsheet.PinkedSheetId, Tournaments.pinked, people);
+        Console.WriteLine($"RockNRoll # People:{Person.CountPerTournament(people, Tournaments.rockNRoll)}");
+        BuildSpreadsheets(Spreadsheet.RockNRollRallySheetId,Tournaments.rockNRoll, people);
 
         //var paymentReader = new ReadPayments();
         //var payments = paymentReader.ReadSpreadsheet();
 
-        //List<IList<object>> dataToWrite = null;
 
         //// Division reports
         //Console.WriteLine("Division Reports");
@@ -44,17 +36,6 @@ partial class Program
         //Console.WriteLine("Shirts Report");
         //    ShirtReport(sheetWriter, people);
 
-        ////All Division Reports
-        //Console.WriteLine("All Division Report");
-        //dataToWrite = AllDivisionReport(people);
-        //sheetWriter.EraseSheetData("ALL Divisions!A1:Y");
-        //sheetWriter.BulkWriteRange("ALL Divisions!A1:Y", dataToWrite);
-
-        //// Full Data
-        //Console.WriteLine("Full Data Report");
-        //dataToWrite = FullDataReport(people);
-        //sheetWriter.EraseSheetData("FullData!A1:Y");
-        //sheetWriter.BulkWriteRange("FullData!A1:Y", dataToWrite);
 
         ////Check In Report
         //Console.WriteLine("Check In Report");
@@ -79,6 +60,31 @@ partial class Program
         //dataToWrite = PaymentsReport(people, payments);
         //sheetWriter.BulkWriteRange($"Payments!A{payments.Count() + 1}", dataToWrit
         Console.WriteLine("Done");
+    }
+
+    private static void BuildSpreadsheets(string sheetId, Tournaments tournament, List<Person> persons)
+    {
+        List<IList<object>>? dataToWrite = null;
+        var sheetWriter = new SheetWriter();
+
+        //All Division Reports
+        Console.WriteLine("All Division Report");
+        dataToWrite = AllDivisionReport(persons, tournament);
+        sheetWriter.EraseSheetData("ALL Divisions!A1:Y", sheetId);
+        sheetWriter.BulkWriteRange("ALL Divisions!A1:Y", dataToWrite, sheetId);
+
+        //Full Data Report
+        Console.WriteLine("Full Data Report");
+        dataToWrite = FullDataReport(persons, tournament);
+        sheetWriter.EraseSheetData("Full Data!A1:Y", sheetId);
+        sheetWriter.BulkWriteRange("Full Data!A1:Y", dataToWrite, sheetId);
+
+        //Sorted Partner Report
+        Console.WriteLine("Partner Report");
+        dataToWrite = PartnerReport(persons, tournament);
+        sheetWriter.EraseSheetData("Partner!A1:Y", sheetId);
+        sheetWriter.BulkWriteRange("Partner!A1:Y", dataToWrite, sheetId);
+
     }
 
     private static List<IList<object>> PaymentsReport(List<Person> people, List<Payment> payments)
@@ -215,13 +221,13 @@ partial class Program
         writer.BulkWriteRange("Shirts!A1:Y", result, sheetId);
     }
 
-    private static void IndividualDivisionReports(SheetWriter writer, List<Person> people, string sheetId)
+    private static void IndividualDivisionReports(SheetWriter writer, List<Person> persons, string sheetId, Tournaments tournament)
     {
         foreach (int evtType in Enum.GetValues(typeof(EventType)))
         {
             foreach (int blvl in Enum.GetValues(typeof(DivisionLevel)))
             {
-                var list = Person.DivisionList(people, (EventType)evtType, (DivisionLevel)blvl);
+                var list = Person.DivisionList(persons, (EventType)evtType, (DivisionLevel)blvl, tournament);
                 if (list.Count > 0)
                 {
                     var eType = (EventType)evtType;
@@ -239,49 +245,117 @@ partial class Program
     //
     // FullData
     //
-    private static List<IList<object>> FullDataReport(List<Person> people)
+    private static List<IList<object>> FullDataReport(List<Person> persons, Tournaments tournament)
     {
         var result = new List<IList<object>>();
 
-        result.Add(new List<object> { "Name", "Email", "Phone", "Due", "Event 1", "Partner", "Event 2", "Partner" });
+        result.Add(new List<object> { "Name", "Registered","Email", "Phone", "Due", "Self Reported Events", "Total Events (counted)", $"{tournament} Events" });
 
-        foreach (var person in people)
+        foreach (var person in persons)
         {
-            var row = new List<object>();
-
-            row.Add(person.Name);
-            row.Add(person.Email);
-            row.Add(person.PhoneNumber);
-            row.Add(Event.Due(person.Events));
-
-            foreach (var evt in person.Events)
+            // only add to the list if in this tournament
+            if (person.Events.FirstOrDefault(x => x.Tournament == tournament) != null)
             {
-                row.Add(Event.DivisionTabName(evt.EventType, evt.DivisionLevel));
-                row.Add(evt.PartnerName);
+                var row = new List<object>();
+
+                row.Add(person.Name);
+                row.Add(person.IsRegistered ? string.Empty : "false");
+                row.Add(person.Email);
+                row.Add(person.PhoneNumber);
+                row.Add($"${person.Events.Count * 30}");
+                row.Add($"{person.SelfReportedNumEvents}");
+                row.Add($"{person.Events.Count}");
+
+                foreach (var evt in person.Events)
+                {
+                    if (evt.Tournament == tournament)
+                    {
+                        row.Add(evt.PartnerName);
+                        row.Add(Event.DivisionTabName(evt.EventType, evt.DivisionLevel));
+                    }
+                }
+                result.Add(row);
             }
-            result.Add(row);
         }
 
         return result;
     }
 
     //
-    // AllDivisionReport
+    // PartnerReport
     //
-    private static List<IList<object>> AllDivisionReport( List<Person> people)
+    private static List<IList<object>> PartnerReport( List<Person> persons, Tournaments tournament )
     {
         var result = new List<IList<object>>();
-        var divisionListsOne = new List<Tuple<string, List<Person>>>();
+        var divisions = new List<Tuple<string, List<TwoPeople>>>();
 
         foreach (var div in Event.Divisions())
         {
 
-            var list = Person.DivisionList(people, div.Item1, div.Item2);
+            var list = Person.DivisionPartners(persons, div.Item1, div.Item2, tournament);
             var division = Registration.DivisionName(div.Item1, div.Item2);
-            divisionListsOne.Add(new Tuple<string, List<Person>>(division, list));
+            divisions.Add(new Tuple<string, List<TwoPeople>>(division, list));
         }
 
-        AllDivisionDetails(result, divisionListsOne);
+        AllPartnerDetails(result, divisions);
+
+        return result;
+    }
+
+    private static void AllPartnerDetails(List<IList<object>> dataToWrite, List<Tuple<string, List<TwoPeople>>> divisionLists)
+    {
+        bool written = true;
+
+        dataToWrite.Add(new List<object>() { $"Division List" });
+        dataToWrite.Add(new List<object>() { "" });
+
+        // write headings
+        var values = new List<object>();
+        foreach (var divisionList in divisionLists)
+        {
+            values.Add(divisionList.Item1);
+        }
+        dataToWrite.Add(values);
+
+        int row = 0;
+        while (written)
+        {
+            written = false;
+            values = new List<object>();
+            for (int col = 0; col < divisionLists.Count; col++)
+            {
+                if (divisionLists[col].Item2.Count > row)
+                {
+                    values.Add(divisionLists[col].Item2[row].ToString());
+                    written = true;
+                }
+                else
+                {
+                    values.Add(string.Empty);
+                }
+            }
+            row++;
+            dataToWrite.Add(values);
+        }
+    }
+
+    //
+    // AllDivisionReport
+    //
+    private static List<IList<object>> AllDivisionReport( List<Person> persons, Tournaments tournament)
+    {
+        var result = new List<IList<object>>();
+        var divisions = new List<Tuple<string, List<Person>>>();
+
+        foreach (var div in Event.Divisions())
+        {
+
+            var list = Person.DivisionList(persons, div.Item1, div.Item2, tournament);
+            var division = Registration.DivisionName(div.Item1, div.Item2);
+            divisions.Add(new Tuple<string, List<Person>>(division, list));
+        }
+
+        AllDivisionDetails(result, divisions);
 
         return result;
     }

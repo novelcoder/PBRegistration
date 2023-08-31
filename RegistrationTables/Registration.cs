@@ -24,19 +24,19 @@ namespace RegistrationTables
         public string PINKED_MensWomensPhoneNumber = string.Empty;
 		public string NumberOfEvents = string.Empty;
 
+		// keep track of phone numbers handed out
+		private static Dictionary<string, string> FalsePhone = new Dictionary<string, string>();
+		private static int FalsePhoneSeed = 1000000001;
+
 		private static List<string> ignoreNames = new List<string>
-			{	"None", "none", "jim test", "Jim test woman", "xxx",
-				"Not entered in mixed", "matthew test" };
+			{	"None", "none", "xxx",
+				"Not entered in mixed"};
 		// make sure key is lower case
 		private static Dictionary<string, string> translateName
 			= new Dictionary<string, string> {
 				{ "jose casarin", "José Casarin" },
-				{ "brian tekolste", "Brian TeKolste" },
                 { "matthew barlow", "Matt Barlow" },
-                { "m", string.Empty },
-				{ "jen stai", "Jennifer Stai" },
-				{ "matt acker", "Matthew Acker" },
-				{ "charles robeson", "Charles Roberson" } };
+                { "m", string.Empty } };
 		private static Dictionary<string, string> translateEmail = new Dictionary<string, string> {
 				{ "acker.matthee3@gmail.com", "acker.matthew3@gmail.com" } };
 		private static List<string> ignorePartnerNames = new List<string>
@@ -52,24 +52,24 @@ namespace RegistrationTables
             {
                 record.Email = TranslateEmail(record.Email);
                 record.Name = TranslateName(record.Name);
-				record.PhoneNumber = TranslatePhoneNumber(record.PhoneNumber);
+				record.PhoneNumber = TranslatePhoneNumber(record.PhoneNumber, record.Name);
 
                 record.RNR_MensWomensPartnerName = TranslateName(record.RNR_MensWomensPartnerName);
-                record.RNR_MensWomensPhoneNumber = TranslatePhoneNumber(record.RNR_MensWomensPhoneNumber);
+                record.RNR_MensWomensPhoneNumber = TranslatePhoneNumber(record.RNR_MensWomensPhoneNumber, record.RNR_MensWomensPartnerName);
                 record.RNR_MixedPartnerName = TranslateName(record.RNR_MixedPartnerName);
-                record.RNR_MixedPartnerPhoneNumber = TranslatePhoneNumber(record.RNR_MixedPartnerPhoneNumber);
+                record.RNR_MixedPartnerPhoneNumber = TranslatePhoneNumber(record.RNR_MixedPartnerPhoneNumber, record.RNR_MixedPartnerName);
 
                 record.PINKED_MensWomensPartnerName = TranslateName(record.PINKED_MensWomensPartnerName);
-				record.PINKED_MensWomensPhoneNumber = TranslatePhoneNumber(record.PINKED_MensWomensPhoneNumber);
+				record.PINKED_MensWomensPhoneNumber = TranslatePhoneNumber(record.PINKED_MensWomensPhoneNumber, record.PINKED_MensWomensPartnerName);
 				record.PINKED_MixedPartnerName = TranslateName(record.PINKED_MixedPartnerName);
-                record.PINKED_MixedPartnerPhoneNumber = TranslatePhoneNumber(record.PINKED_MixedPartnerPhoneNumber);
+                record.PINKED_MixedPartnerPhoneNumber = TranslatePhoneNumber(record.PINKED_MixedPartnerPhoneNumber, record.PINKED_MixedPartnerName);
                 recList.Add(record);
             }
 
             //flesh out the list of people
             foreach ( var record in recList)
 			{
-                AddPerson(persons, record.Name, record.Email, record.PhoneNumber, record.ShirtSize, true);
+                AddPerson(persons, record.Name, record.Email, record.PhoneNumber, record.ShirtSize, record.NumberOfEvents, true);
 
                 AddPerson(persons, record.RNR_MensWomensPartnerName, record.RNR_MensWomensPhoneNumber);
                 AddPerson(persons, record.RNR_MixedPartnerName, record.RNR_MixedPartnerPhoneNumber);
@@ -107,15 +107,12 @@ namespace RegistrationTables
 
 		private static void AddPerson(List<Person> persons, string name, string phoneNumber)
 		{
-			AddPerson(persons, name, string.Empty, phoneNumber, string.Empty, false);
+			AddPerson(persons, name, string.Empty, phoneNumber, string.Empty, string.Empty, false);
 		}
 
-        private static void AddPerson(List<Person> persons, string name, string email, string phoneNumber, string shirtSize, bool masterRegistration)
+        private static void AddPerson(List<Person> persons, string name, string email, string phoneNumber, string shirtSize, string reportedNumEvents, bool masterRegistration)
         {
 			Person? person = null;
-			name = TranslateName(name.Trim());
-			email = TranslateEmail(email.Trim());
-			phoneNumber = TranslatePhoneNumber(phoneNumber.Trim());
 
 			if ( ! string.IsNullOrWhiteSpace(name)
 			  && ignoreNames.FirstOrDefault(x => x == name) == null )
@@ -132,14 +129,18 @@ namespace RegistrationTables
 						PhoneNumber = phoneNumber,
 						Name = name,
 						ShirtSize = shirtSize,
-						IsRegistered = masterRegistration
+						IsRegistered = masterRegistration,
+						SelfReportedNumEvents = SelfRegisteredNumEvents(reportedNumEvents)
 					});
 				}
 				else
 				{
 					//if this is a masterRegistration, just update the person
 					if (masterRegistration)
+					{
 						person.IsRegistered = masterRegistration;
+						person.SelfReportedNumEvents = SelfRegisteredNumEvents(reportedNumEvents);
+					}
 
 					// if incoming name is valid
 					if (!string.IsNullOrWhiteSpace(name))
@@ -172,9 +173,36 @@ namespace RegistrationTables
 			}
         }
 
-		private static string TranslatePhoneNumber(string phoneNumber)
+		private static int SelfRegisteredNumEvents(string numEvents)
+		{
+			int result = 0;
+			string[] words = numEvents.Split();
+			if (words.Length >= 1)
+			{
+				switch (words[0].ToLower())
+				{
+					case "one":
+						result = 1;
+						break;
+					case "two":
+						result = 2;
+						break;
+					case "three":
+						result = 3;
+						break;
+					case "four":
+						result = 4;
+						break;
+				}
+			}
+
+			return result;
+		}
+
+		private static string TranslatePhoneNumber(string phoneNumber, string name)
 		{
 			StringBuilder sb = new StringBuilder();
+
 			bool firstDigit = true;
 			for (int iii=0; iii<phoneNumber.Length; iii++)
 			{
@@ -197,20 +225,29 @@ namespace RegistrationTables
             }
 
 			string result = sb.ToString();
-			// only format 10 digit phone numbers
-			if ( result.Length == 10)
+			if (result.Length != 10)
 			{
-				sb.Clear();
-				sb.Append('(');
-				sb.Append(result.Substring(0, 3));
-				sb.Append(')');
-				sb.Append(' ');
-				sb.Append(result.Substring(3, 3));
-				sb.Append('-');
-				sb.Append(result.Substring(6));
+				if (!FalsePhone.ContainsKey(name))
+				{
+					FalsePhone.Add(name, FalsePhoneSeed++.ToString());
+				}
 
-				result = sb.ToString();
-			}
+				if (FalsePhone.ContainsKey(name))
+				{
+					result = $"{FalsePhone[name]}";
+                }
+            }
+
+			sb.Clear();
+			sb.Append('(');
+			sb.Append(result.Substring(0, 3));
+			sb.Append(')');
+			sb.Append(' ');
+			sb.Append(result.Substring(3, 3));
+			sb.Append('-');
+			sb.Append(result.Substring(6));
+
+			result = sb.ToString();
 
 			return result;
 		}
@@ -220,7 +257,7 @@ namespace RegistrationTables
 			if (translateEmail.TryGetValue(email.Trim(), out result))
                 return result;
             else
-                return email;
+                return email.Trim();
         }
 
         private static string TranslateName(string name)
@@ -229,7 +266,7 @@ namespace RegistrationTables
 			if (translateName.TryGetValue(name.Trim().ToLower(), out result))
 				return result;
 			else
-				return name;
+				return name.Trim();
         }
 
 		internal static string DivisionName(Event evt)

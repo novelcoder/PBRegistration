@@ -9,12 +9,13 @@ namespace RegistrationTables
         public string Email = string.Empty;
         public string ShirtSize = string.Empty;
         public string PhoneNumber = string.Empty;
+        public int SelfReportedNumEvents = 0;
         public bool IsRegistered = false;
         public List<Event> Events = new List<Event>();
 
         internal static Person? FindPerson(List<Person> persons, string name, string phoneNumber)
         {
-            var result = persons.FirstOrDefault( x =>
+            var result = persons.FirstOrDefault(x =>
                 string.Compare(x.Name, name, StringComparison.InvariantCultureIgnoreCase) == 0);
             if (result == null)
                 result = persons.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
@@ -22,18 +23,47 @@ namespace RegistrationTables
             return result;
         }
 
-        internal bool ParticipatesIn(EventType type, DivisionLevel division)
+        internal static int CountPerTournament(List<Person> persons, Tournaments tournament)
         {
-            return Events.FirstOrDefault(x => x.DivisionLevel == division && x.EventType == type) != null;
+            return persons.Count(x => x.Events.Exists(y => y.Tournament == tournament));
         }
 
-        internal static List<Person> DivisionList(List<Person> persons, EventType eventType, DivisionLevel level)
+        internal bool ParticipatesIn(Tournaments tournament, EventType type, DivisionLevel division)
+        {
+            return Events.FirstOrDefault(x => x.DivisionLevel == division && x.EventType == type && x.Tournament == tournament) != null;
+        }
+
+        internal static List<TwoPeople> DivisionPartners(List<Person> persons, EventType eventType, DivisionLevel divisionLevel, Tournaments tournament)
+        {
+            var result = new List<TwoPeople>();
+            foreach (var person in persons)
+            {
+                var evt = person.Events.FirstOrDefault(x => x.EventType == eventType
+                                                         && x.Tournament == tournament
+                                                         && x.DivisionLevel == divisionLevel);
+                if (evt != null)
+                {
+                    var partner = Person.FindPerson(persons, evt.PartnerName, evt.PartnerPhoneNumber);
+                    var twoPeople = new TwoPeople(person, partner);
+                    if (result.FirstOrDefault( x => x == twoPeople) is null)
+                    {
+                        result.Add(twoPeople);
+                    }
+                }
+            }
+
+            result.Sort();
+
+            return result;
+        }
+
+        internal static List<Person> DivisionList(List<Person> persons, EventType eventType, DivisionLevel level, Tournaments tournament)
         {
             List<Person> result = new List<Person>();
 
             foreach (var person in persons)
             {
-                if (person.ParticipatesIn(eventType, level))
+                if (person.ParticipatesIn(tournament, eventType, level))
                     result.Add(person);
             }
 
