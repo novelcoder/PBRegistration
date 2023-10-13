@@ -20,7 +20,7 @@ namespace RegistrationTables
 
         public List<Registration> ReadSheet()
         {
-            string range = "Form Responses 1!A1:Y200";
+            string range = "Form Responses 1!A1:Y300";
             var result = _spreadsheet.SheetsService.Spreadsheets.Values.Get(Spreadsheet.FormResponsesSheetId, range).Execute();
             var values = result.Values;
             var records = new List<Registration>();
@@ -28,7 +28,9 @@ namespace RegistrationTables
             for (int row = 1; row < result.Values.Count; row++)
             {
                 var record = ParseRow(result.Values[row]);
-                if (!string.IsNullOrEmpty(record.Timestamp))
+                if (!string.IsNullOrEmpty(record.Timestamp)
+                  && record.Remove.ToLower().Trim() != "withdraw"
+                  && record.Remove.ToLower().Trim() != "remove")
                     records.Add(record);
             }
 
@@ -96,6 +98,9 @@ namespace RegistrationTables
                         break;
                     case 17:
                         registration.NumberOfEvents = ll.ToString() ?? string.Empty;
+                        break;
+                    case 18:
+                        registration.Remove = ll.ToString() ?? string.Empty;
                         break;
                 }
                 col++;

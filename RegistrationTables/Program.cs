@@ -21,8 +21,8 @@ partial class Program
 
         Console.WriteLine($"Pinked # People:{Person.CountPerTournament(people, Tournaments.pinked)}");
         BuildSpreadsheets(Spreadsheet.PinkedSheetId, Tournaments.pinked, people);
-        Console.WriteLine($"RockNRoll # People:{Person.CountPerTournament(people, Tournaments.rockNRoll)}");
-        BuildSpreadsheets(Spreadsheet.RockNRollRallySheetId,Tournaments.rockNRoll, people);
+        //Console.WriteLine($"RockNRoll # People:{Person.CountPerTournament(people, Tournaments.rockNRoll)}");
+        //BuildSpreadsheets(Spreadsheet.RockNRollRallySheetId,Tournaments.rockNRoll, people);
 
         //var paymentReader = new ReadPayments();
         //var payments = paymentReader.ReadSpreadsheet();
@@ -31,10 +31,6 @@ partial class Program
         //// Division reports
         //Console.WriteLine("Division Reports");
         //IndividualDivisionReports(sheetWriter, people);
-
-        //// Shirts Report
-        //Console.WriteLine("Shirts Report");
-        //    ShirtReport(sheetWriter, people);
 
 
         ////Check In Report
@@ -84,6 +80,10 @@ partial class Program
         dataToWrite = PartnerReport(persons, tournament);
         sheetWriter.EraseSheetData("Partner!A1:Y", sheetId);
         sheetWriter.BulkWriteRange("Partner!A1:Y", dataToWrite, sheetId);
+
+        //// Shirts Report
+        Console.WriteLine("Shirts Report");
+        ShirtReport(sheetWriter, persons, sheetId, tournament);
 
     }
 
@@ -189,7 +189,7 @@ partial class Program
         return result;
     }
 
-    private static void ShirtReport(SheetWriter writer, List<Person> people, string sheetId)
+    private static void ShirtReport(SheetWriter writer, List<Person> persons, string sheetId, Tournaments tournament)
     {
         var result = new List<IList<object>>();
         var colData = new List<object>();
@@ -199,12 +199,15 @@ partial class Program
         colData.Add("Count");
         result.Add(colData);
 
-        foreach ( var person in people)
+        foreach ( var person in persons)
         {
-            if (shirts.ContainsKey(person.ShirtSize))
-                shirts[person.ShirtSize]++;
-            else
-                shirts[person.ShirtSize] = 1;
+            if (person.Events.FirstOrDefault(x => x.Tournament == tournament) != null)
+            {
+                if (shirts.ContainsKey(person.ShirtSize))
+                    shirts[person.ShirtSize]++;
+                else
+                    shirts[person.ShirtSize] = 1;
+            }
         }
         foreach ( var key in shirts.Keys)
         {

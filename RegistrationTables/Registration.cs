@@ -23,6 +23,7 @@ namespace RegistrationTables
         public string PINKED_MensWomensPartnerName = string.Empty;
         public string PINKED_MensWomensPhoneNumber = string.Empty;
 		public string NumberOfEvents = string.Empty;
+		public string Remove = string.Empty;
 
 		// keep track of phone numbers handed out
 		private static Dictionary<string, string> FalsePhone = new Dictionary<string, string>();
@@ -69,12 +70,16 @@ namespace RegistrationTables
             //flesh out the list of people
             foreach ( var record in recList)
 			{
-                AddPerson(persons, record.Name, record.Email, record.PhoneNumber, record.ShirtSize, record.NumberOfEvents, true);
+				if (record.Remove.ToLower().Trim() != "ignore" &&
+					record.Remove.ToLower().Trim() != "withdraw")
+				{
+					AddPerson(persons, record.Name, record.Email, record.PhoneNumber, record.ShirtSize, record.NumberOfEvents, true);
 
-                AddPerson(persons, record.RNR_MensWomensPartnerName, record.RNR_MensWomensPhoneNumber);
-                AddPerson(persons, record.RNR_MixedPartnerName, record.RNR_MixedPartnerPhoneNumber);
-                AddPerson(persons, record.PINKED_MensWomensPartnerName, record.PINKED_MensWomensPhoneNumber);
-                AddPerson(persons, record.PINKED_MixedPartnerName, record.PINKED_MixedPartnerPhoneNumber);
+					AddPerson(persons, record.RNR_MensWomensPartnerName, record.RNR_MensWomensPhoneNumber);
+					AddPerson(persons, record.RNR_MixedPartnerName, record.RNR_MixedPartnerPhoneNumber);
+					AddPerson(persons, record.PINKED_MensWomensPartnerName, record.PINKED_MensWomensPhoneNumber);
+					AddPerson(persons, record.PINKED_MixedPartnerName, record.PINKED_MixedPartnerPhoneNumber);
+				}
             }
 
 			//second, add events
