@@ -12,12 +12,12 @@ namespace RegistrationTables
             _spreadsheet.ConnectGoogle();
         }
 
-        public List<PartnerEmail> ReadSpreadsheet()
+        public List<PartnerEmail> ReadSpreadsheet(string sheetId)
         {
             var result = new List<PartnerEmail>();
 
             string range = "PartnerEmail Save!A1:Y200";
-            var data = _spreadsheet.SheetsService.Spreadsheets.Values.Get(Spreadsheet.MDMUploadSheetId, range).Execute();
+            var data = _spreadsheet.SheetsService.Spreadsheets.Values.Get(sheetId, range).Execute();
 
             for (int iii = 0; iii < data.Values.Count; iii++)
             {

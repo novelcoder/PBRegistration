@@ -20,7 +20,7 @@ namespace RegistrationTables
 
         public List<Registration> ReadSheet()
         {
-            string range = "Form Responses 1!A1:Y200";
+            string range = "Form Responses 1!A1:Y300";
             var result = _spreadsheet.SheetsService.Spreadsheets.Values.Get(Spreadsheet.FormResponsesSheetId, range).Execute();
             var values = result.Values;
             var records = new List<Registration>();
@@ -28,7 +28,9 @@ namespace RegistrationTables
             for (int row = 1; row < result.Values.Count; row++)
             {
                 var record = ParseRow(result.Values[row]);
-                if (!string.IsNullOrEmpty(record.Timestamp))
+                if (!string.IsNullOrEmpty(record.Timestamp)
+                  && record.Remove.ToLower().Trim() != "withdraw"
+                  && record.Remove.ToLower().Trim() != "remove")
                     records.Add(record);
             }
 
@@ -53,64 +55,52 @@ namespace RegistrationTables
                         registration.Name = ll.ToString() ?? string.Empty;
                         break;
                     case 3:
-                        registration.NotEmail = ll.ToString() ?? string.Empty;
-                        break;
-                    case 4:
                         registration.PhoneNumber = ll.ToString() ?? string.Empty;
                         break;
-                    case 5:
-                        registration.MensBracket = ll.ToString() ?? string.Empty;
-                        break;
-                    case 6:
-                        registration.MixedPartnerName = ll.ToString() ?? string.Empty;
-                        break;
-                    case 7:
-                        registration.WomensPartnerName = ll.ToString() ?? string.Empty;
-                        break;
-                    case 8:
+                    case 4:
                         registration.ShirtSize = ll.ToString() ?? string.Empty;
                         break;
+                    case 5:
+                        registration.RNR_MixedSkillLevel = ll.ToString() ?? string.Empty;
+                        break;
+                    case 6:
+                        registration.RNR_MixedPartnerName = ll.ToString() ?? string.Empty;
+                        break;
+                    case 7:
+                        registration.RNR_MixedPartnerPhoneNumber = ll.ToString() ?? string.Empty;
+                        break;
+                    case 8:
+                        registration.RNR_MensWomensSkillLevel = ll.ToString() ?? string.Empty;
+                        break;
                     case 9:
-
-                        registration.WomensBracket = ll.ToString() ?? string.Empty;
+                        registration.RNR_MensWomensPartnerName = ll.ToString() ?? string.Empty;
                         break;
                     case 10:
-
-                        registration.MixedBracket = ll.ToString() ?? string.Empty;
+                        registration.RNR_MensWomensPhoneNumber = ll.ToString() ?? string.Empty;
                         break;
                     case 11:
-
-                        registration.MixedPartnerShirtSize = ll.ToString() ?? string.Empty;
+                        registration.PINKED_MixedSkillLevel = ll.ToString() ?? string.Empty;
                         break;
                     case 12:
-                        registration.GenderPartnerShirtSize = ll.ToString() ?? string.Empty;
+                        registration.PINKED_MixedPartnerName = ll.ToString() ?? string.Empty;
                         break;
                     case 13:
-
-                        registration.MensPartnerName = ll.ToString() ?? string.Empty;
+                        registration.PINKED_MixedPartnerPhoneNumber = ll.ToString() ?? string.Empty;
                         break;
                     case 14:
-
-                        registration.MixedPartnerPhone = ll.ToString() ?? string.Empty;
+                        registration.PINKED_MensWomensSkillLevel = ll.ToString() ?? string.Empty;
                         break;
                     case 15:
-
-                        registration.WomensPartnerPhone = ll.ToString() ?? string.Empty;
+                        registration.PINKED_MensWomensPartnerName = ll.ToString() ?? string.Empty;
                         break;
                     case 16:
-
-                        registration.MensPartnerPhone = ll.ToString() ?? string.Empty;
+                        registration.PINKED_MensWomensPhoneNumber = ll.ToString() ?? string.Empty;
                         break;
                     case 17:
-
-                        registration.MixedPartnerEmail = ll.ToString() ?? string.Empty;
+                        registration.NumberOfEvents = ll.ToString() ?? string.Empty;
                         break;
                     case 18:
-
-                        registration.WomensPartnerEmail = ll.ToString() ?? string.Empty;
-                        break;
-                    case 19:
-                        registration.MensPartnerEmail = ll.ToString() ?? string.Empty;
+                        registration.Remove = ll.ToString() ?? string.Empty;
                         break;
                 }
                 col++;

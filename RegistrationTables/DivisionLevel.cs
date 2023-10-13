@@ -9,9 +9,6 @@ namespace RegistrationTables
 		l30,
 		l35,
         l40,
-		l45plus,
-		s25_30,
-		s35plus,
         l45
     }
 }

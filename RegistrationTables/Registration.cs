@@ -8,38 +8,40 @@ namespace RegistrationTables
 		public string Timestamp = string.Empty;
 		public string Email = string.Empty;
 		public string Name = string.Empty;
-		public string NotEmail = string.Empty;
 		public string PhoneNumber = string.Empty;
-		public string MensBracket = string.Empty;
-		public string MixedPartnerName = string.Empty;
-		public string WomensPartnerName = string.Empty;
-		public string ShirtSize = string.Empty;
-		public string WomensBracket = string.Empty;
-		public string MixedBracket = string.Empty;
-		public string MixedPartnerShirtSize = string.Empty;
-		public string GenderPartnerShirtSize = string.Empty;
-		public string MensPartnerName = string.Empty;
-		public string MixedPartnerPhone = string.Empty;
-		public string WomensPartnerPhone = string.Empty;
-		public string MensPartnerPhone = string.Empty;
-		public string MixedPartnerEmail = string.Empty;
-		public string WomensPartnerEmail = string.Empty;
-		public string MensPartnerEmail = string.Empty;
+        public string ShirtSize = string.Empty;
+		public string RNR_MixedSkillLevel = string.Empty;
+		public string RNR_MixedPartnerName = string.Empty;
+		public string RNR_MixedPartnerPhoneNumber = string.Empty;
+		public string RNR_MensWomensSkillLevel = string.Empty;
+		public string RNR_MensWomensPartnerName = string.Empty;
+		public string RNR_MensWomensPhoneNumber = string.Empty;
+        public string PINKED_MixedSkillLevel = string.Empty;
+        public string PINKED_MixedPartnerName = string.Empty;
+        public string PINKED_MixedPartnerPhoneNumber = string.Empty;
+        public string PINKED_MensWomensSkillLevel = string.Empty;
+        public string PINKED_MensWomensPartnerName = string.Empty;
+        public string PINKED_MensWomensPhoneNumber = string.Empty;
+		public string NumberOfEvents = string.Empty;
+		public string Remove = string.Empty;
 
-		private static List<string> ignoreNames = new List<string> { "None", "none", "jim test", "Jim test woman", "xxx", "Not entered in mixed", "matthew test", "Cindy DeCoster" };
+		// keep track of phone numbers handed out
+		private static Dictionary<string, string> FalsePhone = new Dictionary<string, string>();
+		private static int FalsePhoneSeed = 1000000001;
+
+		private static List<string> ignoreNames = new List<string>
+			{	"None", "none", "xxx",
+				"Not entered in mixed"};
 		// make sure key is lower case
 		private static Dictionary<string, string> translateName
 			= new Dictionary<string, string> {
 				{ "jose casarin", "José Casarin" },
-				{ "brian tekolste", "Brian TeKolste" },
                 { "matthew barlow", "Matt Barlow" },
-                { "m", string.Empty },
-				{ "jen stai", "Jennifer Stai" },
-				{ "matt acker", "Matthew Acker" },
-				{ "charles robeson", "Charles Roberson" } };
+                { "m", string.Empty } };
 		private static Dictionary<string, string> translateEmail = new Dictionary<string, string> {
 				{ "acker.matthee3@gmail.com", "acker.matthew3@gmail.com" } };
-		private static List<string> ignorePartnerNames = new List<string> { "Not entered in mixed", "None" };
+		private static List<string> ignorePartnerNames = new List<string>
+				{ "Not entered in mixed", "None" };
 
         internal static List<Person> Parse(IEnumerable<Registration> records)
         {
@@ -50,301 +52,226 @@ namespace RegistrationTables
             foreach (var record in records)
             {
                 record.Email = TranslateEmail(record.Email);
-                record.MensPartnerEmail = TranslateEmail(record.MensPartnerEmail);
-                record.WomensPartnerEmail = TranslateEmail(record.WomensPartnerEmail);
-                record.MixedPartnerEmail = TranslateEmail(record.MixedPartnerEmail);
-
                 record.Name = TranslateName(record.Name);
-                record.MensPartnerName = TranslateName(record.MensPartnerName);
-                record.WomensPartnerName = TranslateName(record.WomensPartnerName);
-                record.MixedPartnerName = TranslateName(record.MixedPartnerName);
+				record.PhoneNumber = TranslatePhoneNumber(record.PhoneNumber, record.Name);
+
+                record.RNR_MensWomensPartnerName = TranslateName(record.RNR_MensWomensPartnerName);
+                record.RNR_MensWomensPhoneNumber = TranslatePhoneNumber(record.RNR_MensWomensPhoneNumber, record.RNR_MensWomensPartnerName);
+                record.RNR_MixedPartnerName = TranslateName(record.RNR_MixedPartnerName);
+                record.RNR_MixedPartnerPhoneNumber = TranslatePhoneNumber(record.RNR_MixedPartnerPhoneNumber, record.RNR_MixedPartnerName);
+
+                record.PINKED_MensWomensPartnerName = TranslateName(record.PINKED_MensWomensPartnerName);
+				record.PINKED_MensWomensPhoneNumber = TranslatePhoneNumber(record.PINKED_MensWomensPhoneNumber, record.PINKED_MensWomensPartnerName);
+				record.PINKED_MixedPartnerName = TranslateName(record.PINKED_MixedPartnerName);
+                record.PINKED_MixedPartnerPhoneNumber = TranslatePhoneNumber(record.PINKED_MixedPartnerPhoneNumber, record.PINKED_MixedPartnerName);
                 recList.Add(record);
             }
 
             //flesh out the list of people
             foreach ( var record in recList)
 			{
-                AddPerson(persons, record.Name, record.Email, record.PhoneNumber, record.ShirtSize);
-                AddPerson(persons, record.MixedPartnerName, record.MixedPartnerEmail, record.MixedPartnerPhone, record.MixedPartnerShirtSize);
-                AddPerson(persons, record.WomensPartnerName, record.WomensPartnerEmail, record.WomensPartnerPhone, record.GenderPartnerShirtSize);
-                AddPerson(persons, record.MensPartnerName, record.MensPartnerEmail, record.MensPartnerPhone, record.GenderPartnerShirtSize);
+				if (record.Remove.ToLower().Trim() != "ignore" &&
+					record.Remove.ToLower().Trim() != "withdraw")
+				{
+					AddPerson(persons, record.Name, record.Email, record.PhoneNumber, record.ShirtSize, record.NumberOfEvents, true);
+
+					AddPerson(persons, record.RNR_MensWomensPartnerName, record.RNR_MensWomensPhoneNumber);
+					AddPerson(persons, record.RNR_MixedPartnerName, record.RNR_MixedPartnerPhoneNumber);
+					AddPerson(persons, record.PINKED_MensWomensPartnerName, record.PINKED_MensWomensPhoneNumber);
+					AddPerson(persons, record.PINKED_MixedPartnerName, record.PINKED_MixedPartnerPhoneNumber);
+				}
             }
 
-			// second, add events
-			foreach ( var record in recList)
+			//second, add events
+			foreach (var record in recList)
 			{
-				var person = persons.FirstOrDefault(x => x.Name.Equals(record.Name.Trim(), StringComparison.CurrentCultureIgnoreCase));
+				var person = Person.FindPerson(persons, record.Name, record.PhoneNumber);
 				if (person != null)
 				{
-					var womensEvent = BuildEvent(record.WomensBracket, record.WomensPartnerName);
-					var partner = persons.FirstOrDefault(x => x.Name.Equals(record.WomensPartnerName.Trim(), StringComparison.CurrentCultureIgnoreCase));
-					AddEvent(person, womensEvent);
-					AddPartnerEvent(person, partner, womensEvent, record.WomensPartnerName);
+					if (!string.IsNullOrWhiteSpace(record.RNR_MixedSkillLevel))
+						Event.AddEvents(persons, person, record.RNR_MixedSkillLevel, record.RNR_MixedPartnerName, record.RNR_MixedPartnerPhoneNumber, Tournaments.rockNRoll);
+                      
+					if (!string.IsNullOrWhiteSpace(record.RNR_MensWomensSkillLevel))
+						Event.AddEvents(persons, person, record.RNR_MensWomensSkillLevel, record.RNR_MensWomensPartnerName, record.RNR_MensWomensPhoneNumber, Tournaments.rockNRoll);
 
-					var mensEvent = BuildEvent(record.MensBracket, record.MensPartnerName);
-					partner = persons.FirstOrDefault(x => x.Name.Equals(record.MensPartnerName.Trim(), StringComparison.CurrentCultureIgnoreCase));
-					AddEvent(person, mensEvent);
-					AddPartnerEvent(person, partner, mensEvent, record.MensPartnerName);
+					if (!string.IsNullOrWhiteSpace(record.PINKED_MixedSkillLevel))
+						Event.AddEvents(persons, person, record.PINKED_MixedSkillLevel, record.PINKED_MixedPartnerName, record.PINKED_MixedPartnerPhoneNumber, Tournaments.pinked);
 
-					var mixedEvent = BuildEvent(record.MixedBracket, record.MixedPartnerName);
-					partner = persons.FirstOrDefault(x => x.Name.Equals(record.MixedPartnerName.Trim(), StringComparison.CurrentCultureIgnoreCase));
-					AddEvent(person, mixedEvent);
-					AddPartnerEvent(person, partner, mixedEvent, record.MixedPartnerName);
+					if (!string.IsNullOrWhiteSpace(record.PINKED_MensWomensSkillLevel))
+						Event.AddEvents(persons, person, record.PINKED_MensWomensSkillLevel, record.PINKED_MensWomensPartnerName, record.PINKED_MensWomensPhoneNumber, Tournaments.pinked);
 				}
 				else
 				{
-					if ( ! string.IsNullOrWhiteSpace(record.Name))
+					if (!string.IsNullOrWhiteSpace(record.Name))
 						Console.WriteLine($"ERROR - {record.Name} not found.");
 				}
-
 			}
 
 			return persons;
         }
 
-		private static void AddPartnerEvent(Person person, Person? partner, Event? eventToAdd,string partnerName)
+		private static void AddPerson(List<Person> persons, string name, string phoneNumber)
 		{
-			if (partner == null)
-			{
-                if ( ! string.IsNullOrWhiteSpace(partnerName)
-				  && ignorePartnerNames.FirstOrDefault(x => x == partnerName) == null)
-                    Console.WriteLine($"Registration.Parse Partner({partnerName}) not found");
-            }
-			else if (eventToAdd != null)
-			{ 
-				var partnerEvent = new Event
-				{
-					DivisionLevel = eventToAdd.DivisionLevel,
-					EventType = eventToAdd.EventType,
-					PartnerName = person.Name
-				};
-
-                AddEvent(partner, partnerEvent);
-            }
+			AddPerson(persons, name, string.Empty, phoneNumber, string.Empty, string.Empty, false);
 		}
 
-        private static void AddEvent(Person person, Event? eventToAdd)
+        private static void AddPerson(List<Person> persons, string name, string email, string phoneNumber, string shirtSize, string reportedNumEvents, bool masterRegistration)
         {
-			if (eventToAdd != null)
-			{
-				if (person.Events.FirstOrDefault( x => x.DivisionLevel == eventToAdd.DivisionLevel && x.EventType == eventToAdd.EventType) == null)
+			Person? person = null;
+
+			if ( ! string.IsNullOrWhiteSpace(name)
+			  && ignoreNames.FirstOrDefault(x => x == name) == null )
+            {
+                person = persons.FirstOrDefault(x => x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
+				if (person == null)
+					person = persons.FirstOrDefault(x => x.PhoneNumber == phoneNumber);
+
+				if (person == null)
 				{
-					person.Events.Add(eventToAdd);
+					persons.Add(new Person
+					{
+						Email = email,
+						PhoneNumber = phoneNumber,
+						Name = name,
+						ShirtSize = shirtSize,
+						IsRegistered = masterRegistration,
+						SelfReportedNumEvents = SelfRegisteredNumEvents(reportedNumEvents)
+					});
+				}
+				else
+				{
+					//if this is a masterRegistration, just update the person
+					if (masterRegistration)
+					{
+						person.IsRegistered = masterRegistration;
+						person.SelfReportedNumEvents = SelfRegisteredNumEvents(reportedNumEvents);
+					}
+
+					// if incoming name is valid
+					if (!string.IsNullOrWhiteSpace(name))
+					{
+						// if master registration or it's empty, copy value in
+						if ( masterRegistration
+						  || string.IsNullOrEmpty(person.Name))
+						{
+							person.Name = name;
+						}
+					}
+					// not an master registration and name is not filled it, go ahead and replace
+					if ( ! masterRegistration && string.IsNullOrEmpty(person.Name))
+					{
+						person.Name = name;
+					}
+					if (! string.IsNullOrWhiteSpace(email))
+					{
+						person.Email = email;
+					}
+					if (! string.IsNullOrWhiteSpace(phoneNumber))
+					{
+						person.PhoneNumber = phoneNumber;
+					}
+					if (!string.IsNullOrWhiteSpace(shirtSize))
+					{
+						person.ShirtSize = shirtSize;
+					}
 				}
 			}
         }
 
-        private static Event? BuildEvent(string bracket, string partnerName)
-        {
-			Event? result = null;
-			switch (bracket)
-            {
-                case "Men's Doubles 2.5":
-                    result = new Event
-                    {
-                        PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.l25,
-                        EventType = EventType.mens
-                    };
-                    break;
-                case "Men's Doubles 3.0":
-					result = new Event
-					{
-						PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.l30,
-						EventType = EventType.mens
-					};
-					break;
-				case "Men's Doubles 3.5":
-					result = new Event
-					{
-						PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.l35,
-						EventType = EventType.mens
-					};
-					break;
-				case "Men's Doubles 4.0":
-					result = new Event
-					{
-						PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.l40,
-						EventType = EventType.mens
-					};
-
-					break;
-				case "Men's Doubles 4.5":
-					result = new Event
-					{
-						PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.l45,
-						EventType = EventType.mens
-					};
-					break;
-				case "Mixed Doubles 2.5/3.0 - Age 55+ (both partners must be 55+)":
-                    result = new Event
-                    {
-                        PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.s25_30,
-                        EventType = EventType.mixed
-                    };
-                    break;
-
-                case "Men's Doubles 3.5/4.0 - Age 55+ (both partners must be 55+)":
-                    result = new Event
-                    {
-                        PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.s35plus,
-                        EventType = EventType.mens
-                    };
-                    break;
-
-                case "Mixed Doubles 2.5":
-					result = new Event
-					{
-						PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.l25,
-						EventType = EventType.mixed
-					};
-					break;
-				case "Mixed Doubles 3.0":
-					result = new Event
-					{
-						PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.l30,
-						EventType = EventType.mixed
-					};
-					break;
-				case "Mixed Doubles 3.5":
-					result = new Event
-					{
-						PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.l35,
-						EventType = EventType.mixed
-					};
-					break;
-                case "Mixed Doubles 4.0":
-                    result = new Event
-                    {
-                        PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.l40,
-                        EventType = EventType.mixed
-                    };
-                    break;
-                case "Mixed doubles 4.5+":
-					result = new Event
-					{
-						PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.l45plus,
-						EventType = EventType.mixed
-					};
-					break;
-				case "Mixed Doubles 3.5/4.0 - Age 55+ (both partners must be 55+)":
-                    result = new Event
-                    {
-                        PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.s35plus,
-                        EventType = EventType.mixed
-                    };
-                    break;
-
-                case "Not Playing Men's Doubles":
-					break;
-				case "Not playing Mixed Doubles":
-					break;
-				case "Not Playing Women's Doubles":
-					break;
-				case "Women's Doubles 2.5":
-                    result = new Event
-                    {
-                        PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.l25,
-                        EventType = EventType.womens
-                    };
-                    break;
-				case "Women's Doubles 3.0":
-					result = new Event
-					{
-						PartnerName = partnerName,
-						DivisionLevel = DivisionLevel.l30,
-						EventType = EventType.womens
-					};
-					break;
-				case "Women's Doubles 3.5":
-					result = new Event
-					{
-						PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.l35,
-						EventType = EventType.womens
-					};
-					break;
-                case "Women's Doubles 4.0":
-                    result = new Event
-                    {
-                        PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.l40,
-                        EventType = EventType.womens
-                    };
-                    break;
-                case "Women's Doubles 4.5+":
-                    result = new Event
-                    {
-                        PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.l45plus,
-                        EventType = EventType.womens
-                    };
-                    break;
-                case "Women's Doubles 3.5/4.0 - Age 55+ (both partners must be 55+)":
-					result = new Event
-					{
-						PartnerName = partnerName,
-                        DivisionLevel = DivisionLevel.s35plus,
-						EventType = EventType.womens
-					};
-                    break;
-
-                default:
-					Console.WriteLine($"Registration:BuildEvent - Missing DivisionName Name: {bracket}");
-					break;
+		private static int SelfRegisteredNumEvents(string numEvents)
+		{
+			int result = 0;
+			string[] words = numEvents.Split();
+			if (words.Length >= 1)
+			{
+				switch (words[0].ToLower())
+				{
+					case "one":
+						result = 1;
+						break;
+					case "two":
+						result = 2;
+						break;
+					case "three":
+						result = 3;
+						break;
+					case "four":
+						result = 4;
+						break;
+				}
 			}
 
 			return result;
-        }
+		}
 
-        private static void AddPerson(List<Person> persons, string name, string email, string phoneNumber, string shirtSize)
-        {
-			if ( ! string.IsNullOrWhiteSpace(name)
-			  && ignoreNames.FirstOrDefault(x => x == name.Trim()) == null 
-			  && persons.FirstOrDefault(x => x.Name.Equals(name.Trim(), StringComparison.CurrentCultureIgnoreCase)) == null )
+		private static string TranslatePhoneNumber(string phoneNumber, string name)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			bool firstDigit = true;
+			for (int iii=0; iii<phoneNumber.Length; iii++)
 			{
-				var ss = shirtSize;
-				if (shirtSize == "Extra Large")
-					ss = "XL";
-
-				persons.Add(new Person
+				bool keepIt = false;
+				if (phoneNumber[iii] >= '0' && phoneNumber[iii] <='9')
 				{
-					Email = TranslateEmail(email.Trim()),
-					PhoneNumber = phoneNumber,
-					Name = TranslateName(name.Trim()), ShirtSize = ss
-				});
-			}
-        }
+					keepIt = true;
+				}
+				if (firstDigit) //don't need country code
+				{
+					firstDigit = false;
+					if (phoneNumber[iii] == '1')
+						keepIt = false;
+				}
 
+				if (keepIt)
+				{
+					sb.Append(phoneNumber[iii]);
+				}
+            }
+
+			string result = sb.ToString();
+			if (result.Length != 10)
+			{
+				if (!FalsePhone.ContainsKey(name))
+				{
+					FalsePhone.Add(name, FalsePhoneSeed++.ToString());
+				}
+
+				if (FalsePhone.ContainsKey(name))
+				{
+					result = $"{FalsePhone[name]}";
+                }
+            }
+
+			sb.Clear();
+			sb.Append('(');
+			sb.Append(result.Substring(0, 3));
+			sb.Append(')');
+			sb.Append(' ');
+			sb.Append(result.Substring(3, 3));
+			sb.Append('-');
+			sb.Append(result.Substring(6));
+
+			result = sb.ToString();
+
+			return result;
+		}
         private static string TranslateEmail(string email)
         {
-			string result = email;
+			string? result = email;
 			if (translateEmail.TryGetValue(email.Trim(), out result))
                 return result;
             else
-                return email;
+                return email.Trim();
         }
 
         private static string TranslateName(string name)
         {
-            string result = name;
+            string? result = name;
 			if (translateName.TryGetValue(name.Trim().ToLower(), out result))
 				return result;
 			else
-				return name;
+				return name.Trim();
         }
 
 		internal static string DivisionName(Event evt)
@@ -387,15 +314,6 @@ namespace RegistrationTables
                     break;
                 case DivisionLevel.l45:
 					sb.Append("4.5");
-                    break;
-                case DivisionLevel.l45plus:
-					sb.Append("4.5+");
-                    break;
-                case DivisionLevel.s25_30:
-                    sb.Append("55+ - 2.5, 3.0");
-                    break;
-                case DivisionLevel.s35plus:
-					sb.Append("55+ - 3.5+");
                     break;
             }
 

@@ -15,13 +15,13 @@ namespace RegistrationTables
 		{
         }
 
-        public static List<IList<object>> PartnerEmail(List<Person> people, List<Payment> payments)
+        public static List<IList<object>> PartnerEmail(List<Person> people, List<Payment> payments, string sheetId)
         {
             var result = new List<IList<object>>();
             var colData = new List<object>();
 
             var partnerEmailReader = new PartnerEmailReader();
-            var savedEmails = partnerEmailReader.ReadSpreadsheet();
+            var savedEmails = partnerEmailReader.ReadSpreadsheet(sheetId);
 
             var added = new List<string>();
 

@@ -16,7 +16,7 @@ namespace RegistrationTables
             _spreadsheet.ConnectGoogle();
         }
 
-        public string BulkWriteRange(string range, List<IList<object>> data)
+        public string BulkWriteRange(string range, List<IList<object>> data, string sheetId)
         {
             string valueInputOption = "USER_ENTERED";
 
@@ -32,7 +32,7 @@ namespace RegistrationTables
             requestBody.Data = updateData;
 
             var request = _spreadsheet.SheetsService.Spreadsheets
-                                .Values.BatchUpdate(requestBody, Spreadsheet.MDMUploadSheetId);
+                                .Values.BatchUpdate(requestBody, sheetId);
 
             Google.Apis.Sheets.v4.Data.BatchUpdateValuesResponse response = request.Execute();
             // Data.BatchUpdateValuesResponse response = await request.ExecuteAsync(); // For async 
@@ -40,7 +40,7 @@ namespace RegistrationTables
             return JsonConvert.SerializeObject(response);
         }
 
-        internal void EraseSheetData(string range)
+        internal void EraseSheetData(string range, string sheetId)
         {
             var data = new List<IList<object>>();
             for (int row = 0; row < 200; row++)
@@ -52,7 +52,7 @@ namespace RegistrationTables
                 }
                 data.Add(xxx);
             }
-            BulkWriteRange(range, data);
+            BulkWriteRange(range, data, sheetId);
         }
     }
 }
