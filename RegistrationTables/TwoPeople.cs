@@ -47,7 +47,7 @@ namespace RegistrationTables
             return this.ToString().CompareTo(right?.ToString());
         }
 
-        public static bool operator ==(TwoPeople obj1, TwoPeople obj2)
+        public static bool operator ==(TwoPeople obj1, TwoPeople? obj2)
         {
             if (ReferenceEquals(obj1, null))
                 return false;
@@ -65,6 +65,16 @@ namespace RegistrationTables
             return obj1.Person1 != obj2.Person1 || obj1.Person2 != obj2.Person2;
         }
 
-	}
+        public bool Equals(TwoPeople? other)
+        {
+            return this == other;
+        }
+        public override bool Equals(object? obj) => Equals(obj as TwoPeople);
+
+        public override int GetHashCode()
+        {
+            return Person1.GetHashCode() + Person2.GetHashCode();
+        }
+    }
 }
 

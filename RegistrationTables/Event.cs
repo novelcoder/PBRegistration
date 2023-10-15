@@ -10,7 +10,7 @@ namespace RegistrationTables
         public string PartnerName = string.Empty;
         public string PartnerPhoneNumber = string.Empty;
         public Tournaments Tournament = Tournaments.none;
-        bool PartnerIsRegistered = false;
+       
 
         internal static Event? FindEvent(List<Event> events, Tournaments tournament, EventType eventType, DivisionLevel divisionLevel, string partnerName, string partnerPhoneNumber)
         {
@@ -60,8 +60,7 @@ namespace RegistrationTables
             {
                 Tournament = tournament,
                 PartnerPhoneNumber = partnerPhoneNumber,
-                PartnerName = partnerName,
-                PartnerIsRegistered = partnerIsRegistered
+                PartnerName = partnerName
             };
             switch (eventType)
             {

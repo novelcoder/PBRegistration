@@ -2,17 +2,18 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
+using SheetServices;
 
 namespace RegistrationTables
 {
 	public class ReadPayments
     {
-        private Spreadsheet _spreadsheet = new Spreadsheet();
+        private SheetManager sheetManager = new SheetManager();
 
         public ReadPayments()
         {
-            _spreadsheet = new Spreadsheet();
-            _spreadsheet.ConnectGoogle();
+            sheetManager = new SheetManager();
+            sheetManager.ConnectGoogle();
         }
 
         public List<Payment> ReadSpreadsheet(string sheetId)
@@ -20,7 +21,7 @@ namespace RegistrationTables
             var result = new List<Payment>();
 
             string range = "Payments!A1:Y200";
-            var data = _spreadsheet.SheetsService.Spreadsheets.Values.Get(sheetId, range).Execute();
+            var data = sheetManager.SheetsService.Spreadsheets.Values.Get(sheetId, range).Execute();
 
             for (int iii = 0; iii < data.Values.Count; iii++)
             {

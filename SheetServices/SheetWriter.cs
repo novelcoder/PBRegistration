@@ -1,19 +1,15 @@
-﻿using System;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Services;
-using Google.Apis.Sheets.v4;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace RegistrationTables
+namespace SheetServices
 {
 	public class SheetWriter
     {
-        private Spreadsheet _spreadsheet = new Spreadsheet();
+        private SheetManager _sheetManager = new SheetManager();
 
         public SheetWriter()
         {
-            _spreadsheet = new Spreadsheet();
-            _spreadsheet.ConnectGoogle();
+            _sheetManager = new SheetManager();
+            _sheetManager.ConnectGoogle();
         }
 
         public string BulkWriteRange(string range, List<IList<object>> data, string sheetId)
@@ -31,7 +27,7 @@ namespace RegistrationTables
             requestBody.ValueInputOption = valueInputOption;
             requestBody.Data = updateData;
 
-            var request = _spreadsheet.SheetsService.Spreadsheets
+            var request = _sheetManager.SheetsService.Spreadsheets
                                 .Values.BatchUpdate(requestBody, sheetId);
 
             Google.Apis.Sheets.v4.Data.BatchUpdateValuesResponse response = request.Execute();
@@ -40,7 +36,7 @@ namespace RegistrationTables
             return JsonConvert.SerializeObject(response);
         }
 
-        internal void EraseSheetData(string range, string sheetId)
+        public void EraseSheetData(string range, string sheetId)
         {
             var data = new List<IList<object>>();
             for (int row = 0; row < 200; row++)

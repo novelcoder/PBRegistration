@@ -3,6 +3,7 @@ using System.Globalization;
 using RegistrationTables;
 using System.IO;
 using System.Text;
+using SheetServices;
 
 Program program = new();
 program.Start();
@@ -20,9 +21,9 @@ partial class Program
         var people = Registration.Parse(records);
 
         Console.WriteLine($"Pinked # People:{Person.CountPerTournament(people, Tournaments.pinked)}");
-        BuildSpreadsheets(Spreadsheet.PinkedSheetId, Tournaments.pinked, people);
+        BuildSpreadsheets(CurrentTournament.PinkedSheetId, Tournaments.pinked, people);
         //Console.WriteLine($"RockNRoll # People:{Person.CountPerTournament(people, Tournaments.rockNRoll)}");
-        //BuildSpreadsheets(Spreadsheet.RockNRollRallySheetId,Tournaments.rockNRoll, people);
+        //BuildSpreadsheets(CurrentTournament.RockNRollRallySheetId,Tournaments.rockNRoll, people);
 
         //var paymentReader = new ReadPayments();
         //var payments = paymentReader.ReadSpreadsheet();

@@ -4,24 +4,25 @@ using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SheetServices;
 //using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RegistrationTables
 {
 	public class ResponseReader
     {
-        private Spreadsheet _spreadsheet = new Spreadsheet();
+        private SheetManager _spreadsheetManager = new SheetManager();
 
         public ResponseReader()
         {
-            _spreadsheet = new Spreadsheet();
-            _spreadsheet.ConnectGoogle();
+            _spreadsheetManager = new SheetManager();
+            _spreadsheetManager.ConnectGoogle();
         }
 
         public List<Registration> ReadSheet()
         {
             string range = "Form Responses 1!A1:Y300";
-            var result = _spreadsheet.SheetsService.Spreadsheets.Values.Get(Spreadsheet.FormResponsesSheetId, range).Execute();
+            var result = _spreadsheetManager.SheetsService.Spreadsheets.Values.Get(CurrentTournament.FormResponsesSheetId, range).Execute();
             var values = result.Values;
             var records = new List<Registration>();
 

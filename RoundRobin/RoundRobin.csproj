@@ -8,11 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="Google.Apis.Sheets.v4" Version="1.62.0.3148" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="RegistrationMap.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SheetServices\SheetServices.csproj" />

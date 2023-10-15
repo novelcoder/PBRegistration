@@ -3,15 +3,13 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 
-namespace RegistrationTables
+namespace SheetServices
 {
-	public class Spreadsheet
+	public class SheetManager
 	{
 		private static string GoogleApplicationName { get; } = "PBTournament";       
         private static string CredentialsPath { get; } = "/users/jamesgreenwood/Projects/PBRegistration/RegistrationTables/pbtournament-e5c050a7d4a5.json";
-        public static string FormResponsesSheetId { get;  } = "1LqUrcyHJneAeFVVsYGZVPflTPwWG-ar7r8HTyc5Po8Y";
-        public static string RockNRollRallySheetId { get; } = "14jINMg4mNaV-Vwv4QmkBOqOjuDpjG3pOR6T6mvkBXhI";
-        public static string PinkedSheetId { get; set; } = "1fl-wn4q1VqUFd0sTdirsfUt0RDgm6D4sC9iLgm5PnUk";
+        
         private static string[] Scopes = { SheetsService.Scope.Spreadsheets };
 
         public SheetsService SheetsService { get; set; } = new SheetsService();

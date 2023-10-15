@@ -1,14 +1,16 @@
 ﻿
 using System;
+using SheetServices;
+
 namespace RegistrationTables
 {
 	public class PartnerEmailReader
     {
-        private Spreadsheet _spreadsheet = new Spreadsheet();
+        private SheetManager _spreadsheet = new SheetManager();
 
         public PartnerEmailReader()
         {
-            _spreadsheet = new Spreadsheet();
+            _spreadsheet = new SheetManager();
             _spreadsheet.ConnectGoogle();
         }
 
