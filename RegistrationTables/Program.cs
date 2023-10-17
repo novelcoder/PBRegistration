@@ -20,7 +20,7 @@ partial class Program
         var people = Registration.Parse(records);
 
         Console.WriteLine($"Pinked # People:{Person.CountPerTournament(people, Tournaments.pinked)}");
-        BuildSpreadsheets(Spreadsheet.PinkedSheetId, Tournaments.pinked, people);
+        BuildSpreadsheets(Spreadsheet.TempPinkSheetId, Tournaments.pinked, people);
         //Console.WriteLine($"RockNRoll # People:{Person.CountPerTournament(people, Tournaments.rockNRoll)}");
         //BuildSpreadsheets(Spreadsheet.RockNRollRallySheetId,Tournaments.rockNRoll, people);
 
@@ -63,11 +63,11 @@ partial class Program
         List<IList<object>>? dataToWrite = null;
         var sheetWriter = new SheetWriter();
 
-        //All Division Reports
-        Console.WriteLine("All Division Report");
-        dataToWrite = AllDivisionReport(persons, tournament);
-        sheetWriter.EraseSheetData("ALL Divisions!A1:Y", sheetId);
-        sheetWriter.BulkWriteRange("ALL Divisions!A1:Y", dataToWrite, sheetId);
+        ////All Division Reports
+        //Console.WriteLine("All Division Report");
+        //dataToWrite = AllDivisionReport(persons, tournament);
+        //sheetWriter.EraseSheetData("ALL Divisions!A1:Y", sheetId);
+        //sheetWriter.BulkWriteRange("ALL Divisions!A1:Y", dataToWrite, sheetId);
 
         //Full Data Report
         Console.WriteLine("Full Data Report");
@@ -75,15 +75,15 @@ partial class Program
         sheetWriter.EraseSheetData("Full Data!A1:Y", sheetId);
         sheetWriter.BulkWriteRange("Full Data!A1:Y", dataToWrite, sheetId);
 
-        //Sorted Partner Report
-        Console.WriteLine("Partner Report");
-        dataToWrite = PartnerReport(persons, tournament);
-        sheetWriter.EraseSheetData("Partner!A1:Y", sheetId);
-        sheetWriter.BulkWriteRange("Partner!A1:Y", dataToWrite, sheetId);
+        ////Sorted Partner Report
+        //Console.WriteLine("Partner Report");
+        //dataToWrite = PartnerReport(persons, tournament);
+        //sheetWriter.EraseSheetData("Partner!A1:Y", sheetId);
+        //sheetWriter.BulkWriteRange("Partner!A1:Y", dataToWrite, sheetId);
 
-        //// Shirts Report
-        Console.WriteLine("Shirts Report");
-        ShirtReport(sheetWriter, persons, sheetId, tournament);
+        ////// Shirts Report
+        //Console.WriteLine("Shirts Report");
+        //ShirtReport(sheetWriter, persons, sheetId, tournament);
 
     }
 
@@ -252,7 +252,7 @@ partial class Program
     {
         var result = new List<IList<object>>();
 
-        result.Add(new List<object> { "Name", "Registered","Email", "Phone", "Due", "Self Reported Events", "Total Events (counted)", $"{tournament} Events" });
+        result.Add(new List<object> { "Name", "Registered", "Shirt Size","Email", "Phone", "Due", "Self Reported Events", "Total Events (counted)", $"{tournament} Events" });
 
         foreach (var person in persons)
         {
@@ -263,6 +263,7 @@ partial class Program
 
                 row.Add(person.Name);
                 row.Add(person.IsRegistered ? string.Empty : "false");
+                row.Add(person.ShirtSize);
                 row.Add(person.Email);
                 row.Add(person.PhoneNumber);
                 row.Add($"${person.Events.Count * 30}");
