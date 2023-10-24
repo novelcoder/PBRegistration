@@ -9,10 +9,25 @@ partial class Program
 {
     public void Start()
     {
-        Console.WriteLine("start reader");
+        Console.WriteLine("Read Spreadsheet");
+        var brackets = ReadSpreadsheet();
 
+        Console.WriteLine("Writing Brackets to Spreadsheet");
+        BracketsToSpreadsheet(brackets);
+
+        BracketPDF.WriteBrackets(brackets);
+    }
+
+    public List<string>[] ReadSpreadsheet()
+    {
+        Console.WriteLine("Loading Spreadsheet");
         var rr = new PoolReader();
         var brackets = rr.ReadSheet();
+        return brackets;
+    }
+
+    public void BracketsToSpreadsheet(List<string>[] brackets)
+    {
 
         Console.WriteLine("Calculating Matches");
         string sheetName = "not assigned";
@@ -24,6 +39,7 @@ partial class Program
             var dataToWrite = new List<IList<object>>();
             dataToWrite.Add(new List<object>() { "" });
             dataToWrite.Add(new List<object>() { bracketName });
+            Console.WriteLine($"Bracket {bracketName}");
             foreach (var pool in pools)
             {
                 foreach (var round in pool)
@@ -41,6 +57,7 @@ partial class Program
             var sheetWriter = new SheetWriter();
             sheetWriter.EraseSheetData($"{sheetName}!A1:Y", CurrentTournament.PoolSheetId);
             sheetWriter.BulkWriteRange($"{sheetName}!A1:Y", dataToWrite, CurrentTournament.PoolSheetId);
+            Console.WriteLine("Brackets Complete");
         }
     }
 }
