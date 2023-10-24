@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SheetServices", "SheetServi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRoundRobin", "TestRoundRobin\TestRoundRobin.csproj", "{15A6FF69-B2D8-4B3E-9528-B90E8EB922E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreaminandSchemin", "DreaminandSchemin\DreaminandSchemin.csproj", "{6153BCB6-C814-4643-80ED-8F3C205B8D2B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DreaminandSchemin", "DreaminandSchemin\DreaminandSchemin.csproj", "{4C8EED7B-2CAF-40AA-8A63-B1137D4EAEDB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{15A6FF69-B2D8-4B3E-9528-B90E8EB922E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15A6FF69-B2D8-4B3E-9528-B90E8EB922E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15A6FF69-B2D8-4B3E-9528-B90E8EB922E5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6153BCB6-C814-4643-80ED-8F3C205B8D2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6153BCB6-C814-4643-80ED-8F3C205B8D2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6153BCB6-C814-4643-80ED-8F3C205B8D2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6153BCB6-C814-4643-80ED-8F3C205B8D2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C8EED7B-2CAF-40AA-8A63-B1137D4EAEDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C8EED7B-2CAF-40AA-8A63-B1137D4EAEDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C8EED7B-2CAF-40AA-8A63-B1137D4EAEDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C8EED7B-2CAF-40AA-8A63-B1137D4EAEDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
