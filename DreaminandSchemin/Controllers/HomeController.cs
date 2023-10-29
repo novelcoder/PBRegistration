@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using DreaminandSchemin.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
+
 
 namespace DreaminandSchemin.Controllers;
 
@@ -14,16 +16,16 @@ public class HomeController : Controller
         _logger = logger;
     }
 
+    //[AllowAnonymous]
     public IActionResult Index()
     {
-        
         return View();
     }
 
-    [AllowAnonymous]
-    public IActionResult Signin()
+    [HttpPost]
+    public ActionResult Signin(string provider, string returnUrl)
     {
-        int i = 0;
+        var auth = new AuthenticationProperties();
         return View();
     }
 
