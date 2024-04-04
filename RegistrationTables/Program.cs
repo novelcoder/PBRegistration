@@ -19,14 +19,11 @@ partial class Program
         var records = rr.ReadSheet();
         var people = Registration.Parse(records);
 
-        Console.WriteLine($"Pinked # People:{Person.CountPerTournament(people, Tournaments.pinked)}");
-        BuildSpreadsheets(Spreadsheet.PinkedSheetId, Tournaments.pinked, people);
-        //Console.WriteLine($"RockNRoll # People:{Person.CountPerTournament(people, Tournaments.rockNRoll)}");
-        //BuildSpreadsheets(Spreadsheet.RockNRollRallySheetId,Tournaments.rockNRoll, people);
+        Console.WriteLine($"Stroke of Luck # People:{Person.CountPerTournament(people, Tournaments.strokeOfLuck)}");
+        BuildSpreadsheets(Spreadsheet.StrokeOfLuckSheetId, Tournaments.strokeOfLuck, people);
 
         //var paymentReader = new ReadPayments();
         //var payments = paymentReader.ReadSpreadsheet();
-
 
         //// Division reports
         //Console.WriteLine("Division Reports");
@@ -68,6 +65,13 @@ partial class Program
         dataToWrite = AllDivisionReport(persons, tournament);
         sheetWriter.EraseSheetData("ALL Divisions!A1:Y", sheetId);
         sheetWriter.BulkWriteRange("ALL Divisions!A1:Y", dataToWrite, sheetId);
+
+        //Division Phone Report
+        Console.WriteLine("Division Phone Report");
+        dataToWrite = DivisionPhoneReport(persons, tournament);
+        sheetWriter.EraseSheetData("DivPhone!A1:ZZ", sheetId);
+        sheetWriter.BulkWriteRange("DivPhone!A1:ZZ", dataToWrite, sheetId);
+
 
         //Full Data Report
         Console.WriteLine("Full Data Report");
@@ -334,6 +338,67 @@ partial class Program
                 }
                 else
                 {
+                    values.Add(string.Empty);
+                }
+            }
+            row++;
+            dataToWrite.Add(values);
+        }
+    }
+
+    //
+    // DivisionPhoneReport
+    //
+    private static List<IList<object>> DivisionPhoneReport(List<Person> persons, Tournaments tournament)
+    {
+        var result = new List<IList<object>>();
+        var divisions = new List<Tuple<string, List<Person>>>();
+
+        foreach (var div in Event.Divisions())
+        {
+
+            var list = Person.DivisionList(persons, div.Item1, div.Item2, tournament);
+            var division = Registration.DivisionName(div.Item1, div.Item2);
+            divisions.Add(new Tuple<string, List<Person>>(division, list));
+        }
+
+        DivisionPhoneReportDetails(result, divisions);
+
+        return result;
+    }
+
+    private static void DivisionPhoneReportDetails(List<IList<object>> dataToWrite, List<Tuple<string, List<Person>>> divisionLists)
+    {
+        bool written = true;
+
+        dataToWrite.Add(new List<object>() { $"Division Phone List" });
+        dataToWrite.Add(new List<object>() { "" });
+
+        // write headings
+        var values = new List<object>();
+        foreach (var divisionList in divisionLists)
+        {
+            values.Add(divisionList.Item1);
+            values.Add(string.Empty);
+        }
+        dataToWrite.Add(values);
+
+        int row = 0;
+        while (written)
+        {
+            written = false;
+            values = new List<object>();
+            for (int col = 0; col < divisionLists.Count; col++)
+            {
+                if (divisionLists[col].Item2.Count > row)
+                {
+                    values.Add(divisionLists[col].Item2[row].Name);
+                    values.Add(divisionLists[col].Item2[row].PhoneNumber);
+                    written = true;
+                }
+                else
+                {
+                    values.Add(string.Empty);
                     values.Add(string.Empty);
                 }
             }

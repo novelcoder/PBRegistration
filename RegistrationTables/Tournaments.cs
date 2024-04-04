@@ -5,7 +5,8 @@ namespace RegistrationTables
 	{
 		none,
 		rockNRoll,
-		pinked
+		pinked,
+		strokeOfLuck
 	}
 }
 
