@@ -10,18 +10,13 @@ namespace RegistrationTables
 		public string Name = string.Empty;
 		public string PhoneNumber = string.Empty;
         public string ShirtSize = string.Empty;
-		public string RNR_MixedSkillLevel = string.Empty;
-		public string RNR_MixedPartnerName = string.Empty;
-		public string RNR_MixedPartnerPhoneNumber = string.Empty;
-		public string RNR_MensWomensSkillLevel = string.Empty;
-		public string RNR_MensWomensPartnerName = string.Empty;
-		public string RNR_MensWomensPhoneNumber = string.Empty;
-        public string PINKED_MixedSkillLevel = string.Empty;
-        public string PINKED_MixedPartnerName = string.Empty;
-        public string PINKED_MixedPartnerPhoneNumber = string.Empty;
-        public string PINKED_MensWomensSkillLevel = string.Empty;
-        public string PINKED_MensWomensPartnerName = string.Empty;
-        public string PINKED_MensWomensPhoneNumber = string.Empty;
+		public string MixedSkillLevel = string.Empty;
+		public string MixedPartnerName = string.Empty;
+		public string MixedPartnerPhoneNumber = string.Empty;
+		public string MensWomensSkillLevel = string.Empty;
+		public string MensWomensPartnerName = string.Empty;
+		public string MensWomensPhoneNumber = string.Empty;
+		public string NeedAPartner = string.Empty;
 		public string NumberOfEvents = string.Empty;
 		public string Remove = string.Empty;
 
@@ -55,16 +50,12 @@ namespace RegistrationTables
                 record.Name = TranslateName(record.Name);
 				record.PhoneNumber = TranslatePhoneNumber(record.PhoneNumber, record.Name);
 
-                record.RNR_MensWomensPartnerName = TranslateName(record.RNR_MensWomensPartnerName);
-                record.RNR_MensWomensPhoneNumber = TranslatePhoneNumber(record.RNR_MensWomensPhoneNumber, record.RNR_MensWomensPartnerName);
-                record.RNR_MixedPartnerName = TranslateName(record.RNR_MixedPartnerName);
-                record.RNR_MixedPartnerPhoneNumber = TranslatePhoneNumber(record.RNR_MixedPartnerPhoneNumber, record.RNR_MixedPartnerName);
-
-                record.PINKED_MensWomensPartnerName = TranslateName(record.PINKED_MensWomensPartnerName);
-				record.PINKED_MensWomensPhoneNumber = TranslatePhoneNumber(record.PINKED_MensWomensPhoneNumber, record.PINKED_MensWomensPartnerName);
-				record.PINKED_MixedPartnerName = TranslateName(record.PINKED_MixedPartnerName);
-                record.PINKED_MixedPartnerPhoneNumber = TranslatePhoneNumber(record.PINKED_MixedPartnerPhoneNumber, record.PINKED_MixedPartnerName);
-                recList.Add(record);
+                record.MensWomensPartnerName = TranslateName(record.MensWomensPartnerName);
+                record.MensWomensPhoneNumber = TranslatePhoneNumber(record.MensWomensPhoneNumber, record.MensWomensPartnerName);
+                record.MixedPartnerName = TranslateName(record.MixedPartnerName);
+                record.MixedPartnerPhoneNumber = TranslatePhoneNumber(record.MixedPartnerPhoneNumber, record.MixedPartnerName);
+				
+				recList.Add(record);
             }
 
             //flesh out the list of people
@@ -75,10 +66,8 @@ namespace RegistrationTables
 				{
 					AddPerson(persons, record.Name, record.Email, record.PhoneNumber, record.ShirtSize, record.NumberOfEvents, true);
 
-					AddPerson(persons, record.RNR_MensWomensPartnerName, record.RNR_MensWomensPhoneNumber);
-					AddPerson(persons, record.RNR_MixedPartnerName, record.RNR_MixedPartnerPhoneNumber);
-					AddPerson(persons, record.PINKED_MensWomensPartnerName, record.PINKED_MensWomensPhoneNumber);
-					AddPerson(persons, record.PINKED_MixedPartnerName, record.PINKED_MixedPartnerPhoneNumber);
+					AddPerson(persons, record.MensWomensPartnerName, record.MensWomensPhoneNumber);
+					AddPerson(persons, record.MixedPartnerName, record.MixedPartnerPhoneNumber);
 				}
             }
 
@@ -88,17 +77,11 @@ namespace RegistrationTables
 				var person = Person.FindPerson(persons, record.Name, record.PhoneNumber);
 				if (person != null)
 				{
-					if (!string.IsNullOrWhiteSpace(record.RNR_MixedSkillLevel))
-						Event.AddEvents(persons, person, record.RNR_MixedSkillLevel, record.RNR_MixedPartnerName, record.RNR_MixedPartnerPhoneNumber, Tournaments.rockNRoll);
+					if (!string.IsNullOrWhiteSpace(record.MixedSkillLevel) && !string.IsNullOrWhiteSpace(record.MixedPartnerName))
+						Event.AddEvents(persons, person, record.MixedSkillLevel, record.MixedPartnerName, record.MixedPartnerPhoneNumber, Tournaments.strokeOfLuck);
                       
-					if (!string.IsNullOrWhiteSpace(record.RNR_MensWomensSkillLevel))
-						Event.AddEvents(persons, person, record.RNR_MensWomensSkillLevel, record.RNR_MensWomensPartnerName, record.RNR_MensWomensPhoneNumber, Tournaments.rockNRoll);
-
-					if (!string.IsNullOrWhiteSpace(record.PINKED_MixedSkillLevel))
-						Event.AddEvents(persons, person, record.PINKED_MixedSkillLevel, record.PINKED_MixedPartnerName, record.PINKED_MixedPartnerPhoneNumber, Tournaments.pinked);
-
-					if (!string.IsNullOrWhiteSpace(record.PINKED_MensWomensSkillLevel))
-						Event.AddEvents(persons, person, record.PINKED_MensWomensSkillLevel, record.PINKED_MensWomensPartnerName, record.PINKED_MensWomensPhoneNumber, Tournaments.pinked);
+					if (!string.IsNullOrWhiteSpace(record.MensWomensSkillLevel) && !string.IsNullOrWhiteSpace(record.MensWomensPartnerName))
+                        Event.AddEvents(persons, person, record.MensWomensSkillLevel, record.MensWomensPartnerName, record.MensWomensPhoneNumber, Tournaments.strokeOfLuck);		
 				}
 				else
 				{
@@ -209,6 +192,7 @@ namespace RegistrationTables
 			StringBuilder sb = new StringBuilder();
 
 			bool firstDigit = true;
+			phoneNumber = phoneNumber.Trim('+');
 			for (int iii=0; iii<phoneNumber.Length; iii++)
 			{
 				bool keepIt = false;
