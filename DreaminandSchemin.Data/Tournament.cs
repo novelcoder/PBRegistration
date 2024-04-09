@@ -5,5 +5,6 @@ namespace DreaminandSchemin.Data
     {
         public string? TournamentName { get; set; }
         public int Id { get; set; }
+        public string? BracketSheetName { get; set; }
     }
 }

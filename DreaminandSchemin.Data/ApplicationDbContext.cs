@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System.Reflection.Metadata;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DreaminandSchemin.Data;
@@ -9,5 +10,7 @@ public class ApplicationDbContext : IdentityDbContext
         : base(options)
     {
     }
-}
 
+    public DbSet<Tournament> Tournaments { get; set; }
+
+}

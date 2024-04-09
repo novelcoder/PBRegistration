@@ -1,24 +1,41 @@
-﻿@{
+﻿@model DreaminandSchemin.Data.RoundRobinLoadModel
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
-<div>
-    @foreach (var claim in User.Claims)
-        {
-        <div>@claim.Type</div>
-        <div>@claim.Value</div>
-        }
-    <div>Configuration</div>
-    @{ 
-            var builder = WebApplication.CreateBuilder();
-     }
+<form method="post" action="Home/Index">
+    <div>
+        <h2>Tournaments</h2>
+        <div>
+            <table>
+                @foreach (var tournament in Model.Tournaments)
+                {
+                    <tr>
+                        <td>
+                            <div>
+                                <input type="radio" name="tournament"
+                                       value="@tournament.TournamentName" id="@tournament.Id"
+                                       @if (tournament.Id == Model.SelectedId) @Html.Raw(" checked ") />
+                                @tournament.TournamentName
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+    <div>
+        <input type="Submit" value="Load" />
+    </div>
+</form>
 
-    <div>Authentication:Google:ClientId</div>
-    <div>@builder.Configuration["Authentication:Google:ClientId"];</div>
-       
-</div>
+<table>
+    <tr>
+        <th>Divisions</th>
+    </tr>
+</table>
 

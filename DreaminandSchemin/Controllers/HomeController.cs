@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using DreaminandSchemin.Models;
+using DreaminandSchemin.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 
@@ -10,16 +11,29 @@ namespace DreaminandSchemin.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private readonly ApplicationDbContext _dbContext;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, ApplicationDbContext dbContext)
     {
         _logger = logger;
+        _dbContext = dbContext;
     }
 
     //[AllowAnonymous]
     public IActionResult Index()
     {
-        return View();
+        var mgr = new Managers.RoundRobinLoadManager(_dbContext);
+        var model = mgr.Load(null);
+        return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult Index(string tournament)
+    {
+        var mgr = new Managers.RoundRobinLoadManager(_dbContext);
+        var model = mgr.Load(tournament);
+
+        return View(model);
     }
 
     [HttpPost]
