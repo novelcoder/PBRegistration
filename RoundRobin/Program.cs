@@ -10,7 +10,7 @@ partial class Program
     public void Start()
     {
         Console.WriteLine("Read Spreadsheet");
-        var brackets = ReadSpreadsheet();
+        var brackets = ReadSpreadsheet(CurrentTournament.PoolSheetId);
 
         Console.WriteLine("Writing Brackets to Spreadsheet");
         BracketsToSpreadsheet(brackets);
@@ -18,34 +18,34 @@ partial class Program
         BracketPDF.WriteBrackets(brackets);
     }
 
-    public List<string>[] ReadSpreadsheet()
+    public List<string>[] ReadSpreadsheet(string sheetId)
     {
         Console.WriteLine("Loading Spreadsheet");
         var rr = new PoolReader();
-        var brackets = rr.ReadSheet();
-        return brackets;
+        var divisions = rr.ReadSheet(sheetId);
+        return divisions;
     }
 
-    public void BracketsToSpreadsheet(List<string>[] brackets)
+    public void BracketsToSpreadsheet(List<string>[] divisions)
     {
-
         Console.WriteLine("Calculating Matches");
         string sheetName = "not assigned";
-        var bracketName = string.Empty;
-        foreach (var bracket in brackets)
+        var divisionName = string.Empty;
+        foreach (var division in divisions)
         {
-            var pools = PoolDistribution.CalcMatches(bracket, ref sheetName, ref bracketName);
+            var matches = PoolDistribution.CalcMatches(division, ref sheetName, ref divisionName);
+            var divisionModel = PoolDistribution.LoadDivisionModel(matches, divisionName);
 
             var dataToWrite = new List<IList<object>>();
             dataToWrite.Add(new List<object>() { "" });
-            dataToWrite.Add(new List<object>() { bracketName });
-            Console.WriteLine($"Bracket {bracketName}");
-            foreach (var pool in pools)
+            dataToWrite.Add(new List<object>() { divisionName });
+            Console.WriteLine($"Bracket {divisionName}");
+            foreach (var pool in divisionModel.Pools)
             {
-                foreach (var round in pool)
+                foreach (var round in pool.Rounds)
                 {
                     var row = new List<object>();
-                    foreach (var match in round)
+                    foreach (var match in round.Matches)
                     {
                         row.Add($"{match.LeftTeam} vs \n{match.RightTeam}");
                     }

@@ -18,5 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RoundRobin\RoundRobin.csproj" />
+    <ProjectReference Include="..\DreaminandSchemin.Data\DreaminandSchemin.Data.csproj" />
+    <ProjectReference Include="..\DreaminandSchemin.Managers\DreaminandSchemin.Managers.csproj" />
   </ItemGroup>
 </Project>

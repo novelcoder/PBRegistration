@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SheetServices\SheetServices.csproj" />
+    <ProjectReference Include="..\DreaminandSchemin.Data\DreaminandSchemin.Data.csproj" />
   </ItemGroup>
 </Project>

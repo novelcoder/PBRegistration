@@ -12,10 +12,10 @@ namespace RoundRobin
             _spreadsheetManager.ConnectGoogle();
         }
             
-        public List<string>[] ReadSheet()
+        public List<string>[] ReadSheet(string sheetId)
         {
             string range = "Pool List!A1:Y32";
-            var result = _spreadsheetManager.SheetsService.Spreadsheets.Values.Get(CurrentTournament.PoolSheetId, range).Execute();
+            var result = _spreadsheetManager.SheetsService.Spreadsheets.Values.Get(sheetId, range).Execute();
             List<string>[] brackets = new List<string>[1];
 
             for (int row = 0; row < result.Values.Count; row++)

@@ -19,7 +19,8 @@
                             <div>
                                 <input type="radio" name="tournament"
                                        value="@tournament.TournamentName" id="@tournament.Id"
-                                       @if (tournament.Id == Model.SelectedId) @Html.Raw(" checked ") />
+                                       @if (tournament.Id == Model.SelectedId) @Html.Raw(" checked ")
+                                        />
                                 @tournament.TournamentName
                             </div>
                         </td>
@@ -33,9 +34,16 @@
     </div>
 </form>
 
-<table>
-    <tr>
-        <th>Divisions</th>
-    </tr>
-</table>
+@if (Model.DivisionModels != null)
+{
+    <table>
+        @foreach (var divisionModel in Model.DivisionModels)
+            {
+            <tr>
+                <td>@divisionModel.DivisionName</td>
+                <td><a class="btn btn-primary" href="@Url.Action("Division", "Home", new { tournamentId = Model.SelectedId, divisionName = @divisionModel.DivisionName})">view</a></td>
+            </tr>
+            }
+     </table>
+}
 

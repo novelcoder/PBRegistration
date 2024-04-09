@@ -1,5 +1,5 @@
 ﻿using System;
-namespace RoundRobin
+namespace DreaminandSchemin.Data
 {
 	public class Match
 	{

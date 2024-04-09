@@ -36,6 +36,13 @@ public class HomeController : Controller
         return View(model);
     }
 
+    public IActionResult Division(int tournamentId, string divisionName)
+    {
+        var mgr = new Managers.RoundRobinLoadManager(_dbContext);
+        var model = mgr.LoadDivisionViewModel(tournamentId, divisionName);
+        return View(model);
+    }
+
     [HttpPost]
     public ActionResult Signin(string provider, string returnUrl)
     {

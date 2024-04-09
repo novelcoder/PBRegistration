@@ -1,0 +1,35 @@
+﻿@model DreaminandSchemin.Data.DivisionViewModel
+
+@{
+    ViewData["Title"] = "Division";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+</div>
+    <h2>@Model.DivisionName</h2>
+    <div>
+            @foreach (var pool in Model?.Pools ?? new List<DreaminandSchemin.Data.PoolModel>())
+            {
+                <div>
+                    <div>@pool.PoolName</div>
+                    <table>
+                        @foreach (var round in pool.Rounds)
+                        {
+                            <tr>
+                                <th>@round.RoundName</th>
+                            </tr>
+                            @foreach (var match in round.Matches)
+                                {
+                                    string matchStr = $"{match.LeftTeam} vs. {match.RightTeam}";
+                                    <tr>
+                                        <td>@matchStr/td>
+                                    </tr>
+                            }
+                        }
+                    </table>
+                </div>
+            }
+    </div>
+</div>
+

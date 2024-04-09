@@ -8,5 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DreaminandSchemin.Data\DreaminandSchemin.Data.csproj" />
+    <ProjectReference Include="..\RoundRobin\RoundRobin.csproj" />
   </ItemGroup>
 </Project>

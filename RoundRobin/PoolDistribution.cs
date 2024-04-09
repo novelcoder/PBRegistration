@@ -1,7 +1,7 @@
-﻿using System;
+﻿using DreaminandSchemin.Data;
 namespace RoundRobin
 {
-	public class PoolDistribution
+    public class PoolDistribution
 	{
 		private static string[,] fourTeam = new string[3,2]
 			{ { "1-2", "3-4" },
@@ -32,6 +32,30 @@ namespace RoundRobin
 		{
 		}
 
+        public static DivisionModel LoadDivisionModel(List<List<Match>>[] pools, string divisionName)
+        {
+            var result = new DivisionModel();
+
+            result.DivisionName = divisionName;
+            result.Pools = new List<PoolModel>();
+
+            int poolNum = 1;
+            foreach (var rounds in pools)
+            {
+                var poolModel = new PoolModel { PoolName = $"Pool = {poolNum++}" };
+                result.Pools.Add(poolModel);
+                poolModel.Rounds = new List<RoundModel>();
+                int roundNum = 1;
+                foreach ( var matches in rounds)
+                {
+                    var roundModel = new RoundModel { RoundName = $"Round - {roundNum++}" };
+                    poolModel.Rounds.Add(roundModel);
+                    roundModel.Matches = matches;
+                }
+            }
+
+            return result;
+        }
 		public static List<List<Match>> MatchesByRound(List<string> teams)
 		{
 			var result = new List<List<Match>>();
@@ -84,7 +108,6 @@ namespace RoundRobin
 
 			return result;
 		}
-
 
         public static List<List<Match>>[] CalcMatches(List<string> rawRows, ref string sheetName, ref string bracketName)
         {
