@@ -1,4 +1,4 @@
-﻿@model DreaminandSchemin.Data.RoundRobinLoadModel
+﻿@model DreaminandSchemin.Data.TournamentListModel
 
 @{
     ViewData["Title"] = "Home Page";
@@ -6,8 +6,6 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-</div>
-<form method="post" action="Home/Index">
     <div>
         <h2>Tournaments</h2>
         <div>
@@ -17,11 +15,7 @@
                     <tr>
                         <td>
                             <div>
-                                <input type="radio" name="tournament"
-                                       value="@tournament.TournamentName" id="@tournament.Id"
-                                       @if (tournament.Id == Model.SelectedId) @Html.Raw(" checked ")
-                                        />
-                                @tournament.TournamentName
+                                <a class="btn btn-primary" href="@Url.Action("DivisionList", "Home", new { tournamentId = tournament.Id })">View @tournament.TournamentName</a>
                             </div>
                         </td>
                     </tr>
@@ -29,21 +23,4 @@
             </table>
         </div>
     </div>
-    <div>
-        <input type="Submit" value="Load" />
-    </div>
-</form>
-
-@if (Model.DivisionModels != null)
-{
-    <table>
-        @foreach (var divisionModel in Model.DivisionModels)
-            {
-            <tr>
-                <td>@divisionModel.DivisionName</td>
-                <td><a class="btn btn-primary" href="@Url.Action("Division", "Home", new { tournamentId = Model.SelectedId, divisionName = @divisionModel.DivisionName})">view</a></td>
-            </tr>
-            }
-     </table>
-}
 

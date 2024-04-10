@@ -4,32 +4,39 @@ using Google.Apis.Sheets.v4.Data;
 
 namespace DreaminandSchemin.Managers
 {
-	public class RoundRobinLoadManager
+	public class RoundRobinManager
 	{
 		private ApplicationDbContext _dbContext = null;
-		public RoundRobinLoadManager(ApplicationDbContext dbContext)
+		public RoundRobinManager(ApplicationDbContext dbContext)
 		{
 			_dbContext = dbContext;
 		}
 
-		public RoundRobinLoadModel Load(string? tournamentName)
+		public DivisionListModel LoadDivisionList(int tournamentId)
 		{
-			var model = new RoundRobinLoadModel
+			var result = new DivisionListModel {  TournamentId = tournamentId };
+
+            var tournament = _dbContext.Tournaments.FirstOrDefault(x => x.Id == tournamentId);
+
+
+            if (tournament != null )
+            {
+				result.TournamentName = tournament.TournamentName;
+                var divisionModels = LoadDivisionModel(tournament.BracketSheetName);
+				foreach ( var division in divisionModels)
+				{
+					result.Divisions.Add(division.DivisionName);
+				}
+            }
+			return result;
+        }
+
+		public TournamentListModel LoadTournaments()
+		{
+			var model = new TournamentListModel
 			{
 				Tournaments = _dbContext.Tournaments.ToList()
 			};
-
-			if (tournamentName != null)
-			{
-				var tournament = model.Tournaments.FirstOrDefault(x => x.TournamentName.CompareTo(tournamentName) == 0);
-				
-
-				if (tournament != null && ! string.IsNullOrWhiteSpace(tournament.BracketSheetName))
-                {
-                    model.SelectedId = tournament?.Id ?? 0;
-					model.DivisionModels = LoadDivisionModel(tournament.BracketSheetName);
-				}
-			}
 			return model;
 		}
 

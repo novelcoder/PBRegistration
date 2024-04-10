@@ -1,0 +1,24 @@
+﻿@model DreaminandSchemin.Data.DivisionListModel
+
+@{
+    ViewData["Title"] = "Division";
+}
+
+<div class="text-center">
+    <h1 class="display-4">@Model.TournamentName - Divisions</h1>
+</div>
+<div>
+    @if (Model.Divisions != null)
+    {
+        <table>
+            @foreach (var currentDivisionName in Model.Divisions)
+            {
+                <tr>
+                    <td>@currentDivisionName</td>
+                    <td><a class="btn btn-primary" href="@Url.Action("Division", "Home", new { tournamentId = Model.TournamentId, divisionName = currentDivisionName})">view</a></td>
+                </tr>
+            }
+        </table>
+    }
+</div>
+

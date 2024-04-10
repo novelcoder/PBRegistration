@@ -22,23 +22,21 @@ public class HomeController : Controller
     //[AllowAnonymous]
     public IActionResult Index()
     {
-        var mgr = new Managers.RoundRobinLoadManager(_dbContext);
-        var model = mgr.Load(null);
+        var mgr = new Managers.RoundRobinManager(_dbContext);
+        var model = mgr.LoadTournaments();
         return View(model);
     }
 
-    [HttpPost]
-    public IActionResult Index(string tournament)
+    public IActionResult DivisionList(int tournamentId)
     {
-        var mgr = new Managers.RoundRobinLoadManager(_dbContext);
-        var model = mgr.Load(tournament);
-
+        var mgr = new Managers.RoundRobinManager(_dbContext);
+        var model = mgr.LoadDivisionList(tournamentId);
         return View(model);
     }
 
     public IActionResult Division(int tournamentId, string divisionName)
     {
-        var mgr = new Managers.RoundRobinLoadManager(_dbContext);
+        var mgr = new Managers.RoundRobinManager(_dbContext);
         var model = mgr.LoadDivisionViewModel(tournamentId, divisionName);
         return View(model);
     }
